@@ -69,6 +69,10 @@ button{
 <div id="dashboard">
 
 <div class="box">
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="box">
 <h2>Purchase Entry</h2>
 
 <input type="text" id="purchaseName" placeholder="Product Name">
@@ -158,7 +162,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
 getAuth,
 signInWithEmailAndPassword,
-onAuthStateChanged
+onAuthStateChanged,
+signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -200,6 +205,14 @@ loadDashboard();
 }
 
 });
+
+window.logout = async function(){
+
+await signOut(auth);
+
+location.reload();
+
+};
 
 window.login = async function(){
 
@@ -261,7 +274,7 @@ stock: qty
 
 alert("Purchase Saved");
 
-loadProducts();
+await loadProducts();
 
 loadDashboard();
 
