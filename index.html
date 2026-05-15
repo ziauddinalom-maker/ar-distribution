@@ -5,6 +5,9 @@
 <meta charset="UTF-8">
 <title>AR Distribution</title>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <style>
 
 body{
@@ -68,7 +71,7 @@ text-align:center;
 
 <div class="header">
 <h1>AR Distribution</h1>
-<p>Product Management System</p>
+<p>Firebase Product System</p>
 </div>
 
 <div class="container">
@@ -113,27 +116,56 @@ text-align:center;
 
 <script>
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+  authDomain: "ar-distribution-ca285.firebaseapp.com",
+  projectId: "ar-distribution-ca285",
+  storageBucket: "ar-distribution-ca285.firebasestorage.app",
+  messagingSenderId: "668942550210",
+  appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
 function addProduct(){
 
 const name = document.getElementById('productName').value;
 const stock = document.getElementById('productStock').value;
 const price = document.getElementById('productPrice').value;
 
+db.collection("products").add({
+name:name,
+stock:stock,
+price:price
+});
+
+alert("Product Added");
+
+}
+
+db.collection("products").onSnapshot((snapshot)=>{
+
 const table = document.getElementById('productTable');
+
+table.innerHTML = "";
+
+snapshot.forEach((doc)=>{
+
+const product = doc.data();
 
 table.innerHTML += `
 <tr>
-<td>${name}</td>
-<td>${stock}</td>
-<td>৳ ${price}</td>
+<td>${product.name}</td>
+<td>${product.stock}</td>
+<td>৳ ${product.price}</td>
 </tr>
 `;
 
-document.getElementById('productName').value = "";
-document.getElementById('productStock').value = "";
-document.getElementById('productPrice').value = "";
+});
 
-}
+});
 
 </script>
 
