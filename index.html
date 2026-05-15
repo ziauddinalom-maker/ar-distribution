@@ -131,6 +131,12 @@ Total Profit: 0
 </div>
 
 <div class="box">
+
+<input type="text"
+id="searchInput"
+placeholder="Search Product"
+onkeyup="searchProduct()">
+
 <h2>Product List</h2>
 <div id="productList"></div>
 </div>
@@ -472,6 +478,30 @@ Date: ${data.date}
 document.getElementById("salesList").innerHTML = html;
 
 }
+
+window.searchProduct = function(){
+
+const input =
+document.getElementById("searchInput").value.toLowerCase();
+
+const items =
+document.querySelectorAll(".item");
+
+items.forEach((item)=>{
+
+if(item.innerText.toLowerCase().includes(input)){
+
+item.style.display = "block";
+
+}else{
+
+item.style.display = "none";
+
+}
+
+});
+
+};
 
 async function loadDashboard(){
 
