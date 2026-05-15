@@ -107,6 +107,22 @@ button{
 </div>
 
 <div class="box">
+<h2>Dashboard</h2>
+
+<p id="totalProducts">
+Total Stock: 0
+</p>
+
+<p id="totalSales">
+Total Sales: 0
+</p>
+
+<p id="totalProfit">
+Total Profit: 0
+</p>
+</div>
+
+<div class="box">
 <h2>Product List</h2>
 <div id="productList"></div>
 </div>
@@ -192,6 +208,7 @@ document.getElementById("dashboard").style.display = "block";
 loadProducts();
 loadSales();
 loadReturns();
+loadDashboard();
 
 }catch(error){
 
@@ -388,6 +405,49 @@ Date: ${data.date}
 });
 
 document.getElementById("salesList").innerHTML = html;
+
+}
+
+async function loadDashboard(){
+
+const productSnapshot =
+await getDocs(collection(db,"products"));
+
+const salesSnapshot =
+await getDocs(collection(db,"sales"));
+
+let totalProducts = 0;
+
+let totalSales = 0;
+
+let totalProfit = 0;
+
+productSnapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+totalProducts += data.stock || 0;
+
+});
+
+salesSnapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+totalSales += data.qty || 0;
+
+totalProfit += data.profit || 0;
+
+});
+
+document.getElementById("totalProducts").innerHTML =
+"Total Stock: " + totalProducts;
+
+document.getElementById("totalSales").innerHTML =
+"Total Sales: " + totalSales;
+
+document.getElementById("totalProfit").innerHTML =
+"Total Profit: " + totalProfit;
 
 }
 
