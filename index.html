@@ -132,6 +132,28 @@ Total Profit: 0
 
 <div class="box">
 
+<h2>Daily & Monthly Report</h2>
+
+<p id="dailySales">
+Daily Sales: 0
+</p>
+
+<p id="dailyProfit">
+Daily Profit: 0
+</p>
+
+<p id="monthlySales">
+Monthly Sales: 0
+</p>
+
+<p id="monthlyProfit">
+Monthly Profit: 0
+</p>
+
+</div>
+
+<div class="box">
+
 <input type="text"
 id="searchInput"
 placeholder="Search Product"
@@ -214,8 +236,12 @@ document.getElementById("dashboard").style.display = "block";
 
 loadProducts();
 loadSales();
+loadDashboard();
+loadReports();
 loadReturns();
 loadDashboard();
+loadReports();
+loadReports();
 
 }
 
@@ -253,8 +279,12 @@ document.getElementById("dashboard").style.display = "block";
 
 loadProducts();
 loadSales();
+loadDashboard();
+loadReports();
 loadReturns();
 loadDashboard();
+loadReports();
+loadReports();
 
 }catch(error){
 
@@ -316,8 +346,9 @@ stock: qty
 alert("Purchase Saved");
 
 await loadProducts();
-
 loadDashboard();
+loadReports();
+loadReports();
 
 };
 
@@ -418,6 +449,8 @@ alert("Sale Saved");
 
 loadProducts();
 loadSales();
+loadDashboard();
+loadReports();
 
 };
 
@@ -456,6 +489,8 @@ alert("Return Saved");
 
 loadProducts();
 loadReturns();
+loadDashboard();
+loadReports();
 
 };
 
@@ -497,8 +532,9 @@ await deleteDoc(doc(db,"products",id));
 alert("Product Deleted");
 
 loadProducts();
-
 loadDashboard();
+loadReports();
+loadReports();
 
 };
 
@@ -572,6 +608,68 @@ document.getElementById("totalSales").innerHTML =
 
 document.getElementById("totalProfit").innerHTML =
 "Total Profit: " + totalProfit;
+
+}
+
+async function loadReports(){
+
+const salesSnapshot =
+await getDocs(collection(db,"sales"));
+
+let dailySales = 0;
+
+let dailyProfit = 0;
+
+let monthlySales = 0;
+
+let monthlyProfit = 0;
+
+const today =
+new Date().toLocaleDateString();
+
+const currentMonth =
+new Date().getMonth();
+
+salesSnapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+const saleDate =
+new Date(data.date);
+
+if(
+saleDate.toLocaleDateString() === today
+){
+
+dailySales += data.qty || 0;
+
+dailyProfit += data.profit || 0;
+
+}
+
+if(
+saleDate.getMonth() === currentMonth
+){
+
+monthlySales += data.qty || 0;
+
+monthlyProfit += data.profit || 0;
+
+}
+
+});
+
+document.getElementById("dailySales").innerHTML =
+"Daily Sales: " + dailySales;
+
+document.getElementById("dailyProfit").innerHTML =
+"Daily Profit: " + dailyProfit;
+
+document.getElementById("monthlySales").innerHTML =
+"Monthly Sales: " + monthlySales;
+
+document.getElementById("monthlyProfit").innerHTML =
+"Monthly Profit: " + monthlyProfit;
 
 }
 
