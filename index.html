@@ -1,733 +1,319 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AR Distribution</title>
 
 <style>
-
 body{
-  font-family:Arial;
-  background:#f5f5f5;
-  margin:0;
-  padding:20px;
+font-family:Arial;
+margin:0;
+padding:10px;
+background:#f1f1f1;
 }
 
 .box{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  max-width:500px;
-  margin:auto;
-  margin-top:20px;
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 
-input,button,select{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  box-sizing:border-box;
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:6px;
+border:1px solid #ccc;
+box-sizing:border-box;
 }
 
 button{
-  background:#0d6efd;
-  color:white;
-  border:none;
-  cursor:pointer;
+background:#0d6efd;
+color:white;
+border:none;
 }
 
 .item{
-  background:#ffffff;
-  padding:10px;
-  margin-top:10px;
-  border-radius:5px;
+padding:10px;
+background:#fafafa;
+margin-top:10px;
+border-radius:8px;
 }
-
-#dashboard{
-  display:none;
-}
-
 </style>
 </head>
-
 <body>
 
-<div class="box" id="loginPage">
-
-<h2>Admin Login</h2>
-
-<input type="email" id="email" placeholder="Email">
-
-<input type="password" id="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-
-</div>
-
-<div id="dashboard">
-
 <div class="box">
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
 </div>
 
-<div class="box">
-<h2>Purchase Entry</h2>
-
-<select id="purchaseSelect">
-<option value="">Select Existing Product</option>
-</select>
-
-<input type="text" id="purchaseName" placeholder="Or New Product Name">
-
+<div class="box purchaseBox">
+<h2>Purchase</h2>
+<select id="purchaseSelect"></select>
+<input type="text" id="productName" placeholder="Product Name">
 <input type="number" id="buyPrice" placeholder="Buy Price">
-
 <input type="number" id="sellPrice" placeholder="Sell Price">
-
-<input type="number" id="purchaseQty" placeholder="Quantity">
-
-<button onclick="savePurchase()">Save Purchase</button>
-</div>
-
-<div class="box">
-<h2>Sales Entry</h2>
-
-<select id="productSelect">
-<option>Select Product</option>
-</select>
-
-<input type="number" id="saleQty" placeholder="Sale Quantity">
-
-<button onclick="saveSale()">Save Sale</button>
-</div>
-
-<div class="box">
-<h2>Return Product</h2>
-
-<select id="returnProduct">
-<option>Select Product</option>
-</select>
-
-<input type="number" id="returnQty" placeholder="Return Quantity">
-
-<button onclick="returnProductFunc()">Return Product</button>
+<input type="number" id="stock" placeholder="Stock">
+<button onclick="addPurchase()">Save Purchase</button>
 </div>
 
 <div class="box">
 <h2>Dashboard</h2>
-
-<p id="totalProducts">
-Total Stock: 0
-</p>
-
-<p id="totalSales">
-Total Sales: 0
-</p>
-
-<p id="totalProfit">
-Total Profit: 0
-</p>
+<p id="totalProducts">Total Stock: 0</p>
+<p id="totalSales">Total Sales: 0</p>
+<p id="totalProfit">Total Profit: 0</p>
 </div>
 
 <div class="box">
-
 <h2>Daily & Monthly Report</h2>
-
-<p id="dailySales">
-Daily Sales: 0
-</p>
-
-<p id="dailyProfit">
-Daily Profit: 0
-</p>
-
-<p id="monthlySales">
-Monthly Sales: 0
-</p>
-
-<p id="monthlyProfit">
-Monthly Profit: 0
-</p>
-
+<p id="dailySales">Daily Sales: 0</p>
+<p id="dailyProfit">Daily Profit: 0</p>
+<p id="monthlySales">Monthly Sales: 0</p>
+<p id="monthlyProfit">Monthly Profit: 0</p>
 </div>
 
 <div class="box">
-
-<input type="text"
-id="searchInput"
-placeholder="Search Product"
-onkeyup="searchProduct()">
-
-<button onclick="printInvoice()">
-Print Invoice
-</button>
-
-<button onclick="downloadPDF()">
-Download PDF Invoice
-</button>
-
-<h2>Product List</h2>
+<input type="text" id="searchInput" placeholder="Search Product" onkeyup="searchProduct()">
+<button onclick="downloadPDF()">Download PDF Invoice</button>
+<h2>Products</h2>
 <div id="productList"></div>
-</div>
-
-<div class="box">
-<h2>Sales History</h2>
-<div id="salesList"></div>
-</div>
-
-<div class="box">
-<h2>Return History</h2>
-<div id="returnList"></div>
-</div>
-
 </div>
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 getFirestore,
 collection,
 addDoc,
 getDocs,
-deleteDoc,
 doc,
 updateDoc,
-getDoc
+getDoc,
+deleteDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
 getAuth,
 signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
+signOut,
+onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-
-apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
-
-authDomain: "ar-distribution-ca285.firebaseapp.com",
-
-projectId: "ar-distribution-ca285",
-
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
-
-messagingSenderId: "668942550210",
-
-appId: "1:668942550210:web:4b1bccf00766a3c274275b"
-
+apiKey: "YOUR-API-KEY",
+authDomain: "YOUR-DOMAIN",
+projectId: "YOUR-PROJECT-ID",
+storageBucket: "YOUR-STORAGE",
+messagingSenderId: "YOUR-SENDER-ID",
+appId: "YOUR-APP-ID"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-
-if(user){
-
-document.getElementById("loginPage").style.display = "none";
-
-document.getElementById("dashboard").style.display = "block";
-
-loadProducts();
-loadSales();
-loadDashboard();
-loadReports();
-loadReturns();
-loadDashboard();
-loadReports();
-loadReports();
-
-}
-
-});
-
-window.logout = async function(){
-
-await signOut(auth);
-
-location.reload();
-
-};
+let currentRole = "";
 
 window.login = async function(){
 
-const email =
-document.getElementById("email").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
 
-const password =
-document.getElementById("password").value;
+await signInWithEmailAndPassword(auth,email,password);
 
-try{
-
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-alert("Login Successful");
-
-document.getElementById("loginPage").style.display = "none";
-
-document.getElementById("dashboard").style.display = "block";
-
-loadProducts();
-loadSales();
-loadDashboard();
-loadReports();
-loadReturns();
-loadDashboard();
-loadReports();
-loadReports();
-
-}catch(error){
-
-alert(error.message);
-
-}
+alert("Login Success");
 
 };
 
-window.savePurchase = async function(){
+window.logout = async function(){
+await signOut(auth);
+location.reload();
+};
 
-const selectedId =
-document.getElementById("purchaseSelect").value;
+onAuthStateChanged(auth, async(user)=>{
 
-const nameInput =
-document.getElementById("purchaseName").value;
+if(user){
 
-const buyPrice =
-Number(document.getElementById("buyPrice").value);
+const usersSnapshot = await getDocs(collection(db,"users"));
 
-const sellPrice =
-Number(document.getElementById("sellPrice").value);
-
-const qty =
-Number(document.getElementById("purchaseQty").value);
-
-if(selectedId){
-
-const productRef =
-doc(db,"products",selectedId);
-
-const productSnap =
-await getDoc(productRef);
-
-const oldData =
-productSnap.data();
-
-await updateDoc(productRef,{
-
-stock: oldData.stock + qty,
-buyPrice,
-sellPrice
-
+usersSnapshot.forEach((d)=>{
+const data = d.data();
+if(data.email === user.email){
+currentRole = data.role;
+}
 });
 
-}else{
+if(currentRole === "officer"){
+document.querySelector(".purchaseBox").style.display = "none";
+}
 
-await addDoc(collection(db,"products"),{
-
-name:nameInput,
-buyPrice,
-sellPrice,
-stock: qty
-
-});
+loadProducts();
+loadDashboard();
+loadReports();
 
 }
 
-alert("Purchase Saved");
+});
 
-await loadProducts();
+window.addPurchase = async function(){
+
+const name = document.getElementById("productName").value;
+const buy = Number(document.getElementById("buyPrice").value);
+const sell = Number(document.getElementById("sellPrice").value);
+const stock = Number(document.getElementById("stock").value);
+
+await addDoc(collection(db,"products"),{
+name,
+buy,
+sell,
+stock
+});
+
+alert("Saved");
+
+loadProducts();
 loadDashboard();
-loadReports();
 loadReports();
 
 };
 
 async function loadProducts(){
 
-const querySnapshot =
-await getDocs(collection(db,"products"));
+const snapshot = await getDocs(collection(db,"products"));
 
 let html = "";
+let options = "<option>Select Product</option>";
 
-let options = "<option value=''>Select Product</option>";
-
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
+options += `<option>${data.name}</option>`;
+
 html += `
 <div class="item">
-
-Product: ${data.name}
+<b>${data.name}</b>
 <br>
-Buy Price: ${data.buyPrice}
+Buy: ${data.buy}
 <br>
-Sell Price: ${data.sellPrice}
+Sell: ${data.sell}
 <br>
 Stock: ${data.stock}
 <br>
 ${data.stock <= 5 ? "⚠️ Low Stock" : ""}
 <br>
-<button onclick="deleteProduct('${docSnap.id}')">
-Delete
-</button>
-
+<button onclick="deleteProduct('${docSnap.id}')">Delete</button>
 </div>
-`;
-
-options += `
-<option value="${docSnap.id}">
-${data.name}
-</option>
 `;
 
 });
 
 document.getElementById("productList").innerHTML = html;
-
-document.getElementById("productSelect").innerHTML = options;
-
-document.getElementById("returnProduct").innerHTML = options;
-
-document.getElementById("purchaseSelect").innerHTML = "<option value=''>Select Existing Product</option>" + options;
-
-}
-
-window.saveSale = async function(){
-
-const productId =
-document.getElementById("productSelect").value;
-
-const qty =
-Number(document.getElementById("saleQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-if(productData.stock < qty){
-
-alert("Not Enough Stock");
-return;
-
-}
-
-await updateDoc(productRef,{
-
-stock: productData.stock - qty
-
-});
-
-const profit =
-(productData.sellPrice - productData.buyPrice) * qty;
-
-await addDoc(collection(db,"sales"),{
-
-product: productData.name,
-qty,
-profit,
-date:new Date().toLocaleString()
-
-});
-
-alert("Sale Saved");
-
-loadProducts();
-loadSales();
-loadDashboard();
-loadReports();
-
-};
-
-window.returnProductFunc = async function(){
-
-const productId =
-document.getElementById("returnProduct").value;
-
-const qty =
-Number(document.getElementById("returnQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-await updateDoc(productRef,{
-
-stock: productData.stock + qty
-
-});
-
-await addDoc(collection(db,"returns"),{
-
-product: productData.name,
-qty,
-date:new Date().toLocaleString()
-
-});
-
-alert("Return Saved");
-
-loadProducts();
-loadReturns();
-loadDashboard();
-loadReports();
-
-};
-
-async function loadSales(){
-
-const querySnapshot =
-await getDocs(collection(db,"sales"));
-
-let html = "";
-
-querySnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-<div class="item">
-
-Product: ${data.product}
-<br>
-Qty: ${data.qty}
-<br>
-Profit: ${data.profit}
-<br>
-Date: ${data.date}
-
-</div>
-`;
-
-});
-
-document.getElementById("salesList").innerHTML = html;
+document.getElementById("purchaseSelect").innerHTML = options;
 
 }
 
 window.deleteProduct = async function(id){
 
-await deleteDoc(doc(db,"products",id));
+if(currentRole === "officer"){
+alert("No Permission");
+return;
+}
 
-alert("Product Deleted");
+await deleteDoc(doc(db,"products",id));
 
 loadProducts();
 loadDashboard();
 loadReports();
-loadReports();
-
-};
-
-window.printInvoice = function(){
-
-window.print();
-
-};
-
-window.downloadPDF = function(){
-
-const content = document.body.innerHTML;
-
-const win = window.open('', '', 'height=700,width=700');
-
-win.document.write('<html><head><title>Invoice PDF</title>');
-
-win.document.write('</head><body>');
-
-win.document.write(content);
-
-win.document.write('</body></html>');
-
-win.document.close();
-
-win.print();
-
-};
-
-window.searchProduct = function(){
-
-const input =
-document.getElementById("searchInput").value.toLowerCase();
-
-const items =
-document.querySelectorAll(".item");
-
-items.forEach((item)=>{
-
-if(item.innerText.toLowerCase().includes(input)){
-
-item.style.display = "block";
-
-}else{
-
-item.style.display = "none";
-
-}
-
-});
 
 };
 
 async function loadDashboard(){
 
-const productSnapshot =
-await getDocs(collection(db,"products"));
+const snapshot = await getDocs(collection(db,"products"));
 
-const salesSnapshot =
-await getDocs(collection(db,"sales"));
+let totalStock = 0;
 
-let totalProducts = 0;
-
-let totalSales = 0;
-
-let totalProfit = 0;
-
-productSnapshot.forEach((doc)=>{
-
-const data = doc.data();
-
-totalProducts += data.stock || 0;
-
-});
-
-salesSnapshot.forEach((doc)=>{
-
-const data = doc.data();
-
-totalSales += data.qty || 0;
-
-totalProfit += data.profit || 0;
-
+snapshot.forEach((d)=>{
+const data = d.data();
+totalStock += Number(data.stock || 0);
 });
 
 document.getElementById("totalProducts").innerHTML =
-"Total Stock: " + totalProducts;
-
-document.getElementById("totalSales").innerHTML =
-"Total Sales: " + totalSales;
-
-document.getElementById("totalProfit").innerHTML =
-"Total Profit: " + totalProfit;
+"Total Stock: " + totalStock;
 
 }
 
 async function loadReports(){
 
-const salesSnapshot =
-await getDocs(collection(db,"sales"));
+const snapshot = await getDocs(collection(db,"sales"));
 
 let dailySales = 0;
-
 let dailyProfit = 0;
-
 let monthlySales = 0;
-
 let monthlyProfit = 0;
 
-const today =
-new Date().toLocaleDateString();
+const today = new Date().toLocaleDateString();
+const currentMonth = new Date().getMonth();
 
-const currentMonth =
-new Date().getMonth();
+snapshot.forEach((d)=>{
 
-salesSnapshot.forEach((doc)=>{
+const data = d.data();
+const saleDate = new Date(data.date);
 
-const data = doc.data();
-
-const saleDate =
-new Date(data.date);
-
-if(
-saleDate.toLocaleDateString() === today
-){
-
+if(saleDate.toLocaleDateString() === today){
 dailySales += data.qty || 0;
-
 dailyProfit += data.profit || 0;
-
 }
 
-if(
-saleDate.getMonth() === currentMonth
-){
-
+if(saleDate.getMonth() === currentMonth){
 monthlySales += data.qty || 0;
-
 monthlyProfit += data.profit || 0;
-
 }
 
 });
 
-document.getElementById("dailySales").innerHTML =
-"Daily Sales: " + dailySales;
-
-document.getElementById("dailyProfit").innerHTML =
-"Daily Profit: " + dailyProfit;
-
-document.getElementById("monthlySales").innerHTML =
-"Monthly Sales: " + monthlySales;
-
-document.getElementById("monthlyProfit").innerHTML =
-"Monthly Profit: " + monthlyProfit;
+document.getElementById("dailySales").innerHTML = "Daily Sales: " + dailySales;
+document.getElementById("dailyProfit").innerHTML = "Daily Profit: " + dailyProfit;
+document.getElementById("monthlySales").innerHTML = "Monthly Sales: " + monthlySales;
+document.getElementById("monthlyProfit").innerHTML = "Monthly Profit: " + monthlyProfit;
 
 }
 
-async function loadReturns(){
+window.searchProduct = function(){
 
-const querySnapshot =
-await getDocs(collection(db,"returns"));
+const input = document.getElementById("searchInput").value.toLowerCase();
 
-let html = "";
+const items = document.querySelectorAll(".item");
 
-querySnapshot.forEach((docSnap)=>{
+items.forEach((item)=>{
 
-const data = docSnap.data();
-
-html += `
-<div class="item">
-
-Product: ${data.product}
-<br>
-Return Qty: ${data.qty}
-<br>
-Date: ${data.date}
-
-</div>
-`;
+if(item.innerText.toLowerCase().includes(input)){
+item.style.display = "block";
+}else{
+item.style.display = "none";
+}
 
 });
 
-document.getElementById("returnList").innerHTML = html;
+};
 
-}
+window.downloadPDF = function(){
+window.print();
+};
 
 </script>
 
 </body>
 </html>
-<!-- update -->
