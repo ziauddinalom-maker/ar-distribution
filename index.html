@@ -2,173 +2,377 @@
 <html>
 
 <head>
-<meta charset="UTF-8">
-<title>AR Distribution</title>
+  <title>AR Distribution</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
 
-<style>
+    body{
+      font-family:Arial;
+      background:#f5f5f5;
+      padding:20px;
+    }
 
-body{
-font-family:sans-serif;
-margin:0;
-background:#eef4ff;
-}
+    .box{
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      max-width:500px;
+      margin:auto;
+      margin-top:20px;
+    }
 
-.header{
-background:#1565c0;
-color:white;
-padding:20px;
-text-align:center;
-}
+    input,button,select{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+    }
 
-.container{
-padding:20px;
-}
+    button{
+      background:#0d6efd;
+      color:white;
+      border:none;
+    }
 
-.card{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-}
+    .item{
+      background:#ffffff;
+      padding:10px;
+      margin-top:10px;
+      border-radius:5px;
+    }
 
-input{
-width:100%;
-padding:10px;
-margin-top:10px;
-margin-bottom:10px;
-}
-
-button{
-background:#1565c0;
-color:white;
-padding:10px 20px;
-border:none;
-border-radius:5px;
-margin-top:10px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-table th, table td{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
-}
-
-</style>
+  </style>
 
 </head>
 
 <body>
 
-<div class="header">
-<h1>AR Distribution</h1>
-<p>Firebase Product System</p>
-</div>
-
-<div class="container">
-
-<div class="card">
+<div class="box">
 
 <h2>Add Product</h2>
 
-<input type="text" id="productName" placeholder="Product Name">
+<input type="text" id="name" placeholder="Product Name">
 
-<input type="number" id="productStock" placeholder="Stock">
+<input type="number" id="stock" placeholder="Stock Quantity">
 
-<input type="number" id="productPrice" placeholder="Price">
-
-<button onclick="addProduct()">Add Product</button>
+<button onclick="saveProduct()">
+Save Product
+</button>
 
 </div>
 
-<div class="card">
+<div class="box">
+
+<h2>Sales Entry</h2>
+
+<select id="productSelect">
+<option>Select Product</option>
+</select>
+
+<input type="number" id="saleQty" placeholder="Sale Quantity">
+
+<button onclick="saveSale()">
+Save Sale
+</button>
+
+</div>
+
+<div class="box">
+
+<h2>Return Product</h2>
+
+<select id="returnProduct">
+<option>Select Product</option>
+</select>
+
+<input type="number" id="returnQty" placeholder="Return Quantity">
+
+<button onclick="returnProductFunc()">
+Return Product
+</button>
+
+</div>
+
+<div class="box">
 
 <h2>Product List</h2>
 
-<table>
-
-<thead>
-<tr>
-<th>Product</th>
-<th>Stock</th>
-<th>Price</th>
-</tr>
-</thead>
-
-<tbody id="productTable">
-
-</tbody>
-
-</table>
+<div id="productList"></div>
 
 </div>
 
+<div class="box">
+
+<h2>Sales History</h2>
+
+<div id="salesList"></div>
+
 </div>
 
-<script>
+<div class="box">
+
+<h2>Return History</h2>
+
+<div id="returnList"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+doc,
+updateDoc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+
   authDomain: "ar-distribution-ca285.firebaseapp.com",
+
   projectId: "ar-distribution-ca285",
+
   storageBucket: "ar-distribution-ca285.firebasestorage.app",
+
   messagingSenderId: "668942550210",
+
   appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const db = firebase.firestore();
+const db = getFirestore(app);
 
-function addProduct(){
+window.saveProduct = async function(){
 
-const name = document.getElementById('productName').value;
-const stock = document.getElementById('productStock').value;
-const price = document.getElementById('productPrice').value;
+  const name =
+  document.getElementById("name").value;
 
-db.collection("products").add({
-name:name,
-stock:stock,
-price:price
-});
+  const stock =
+  Number(document.getElementById("stock").value);
 
-alert("Product Added");
+  await addDoc(collection(db,"products"),{
+
+    name,
+    stock
+
+  });
+
+  alert("Product Saved");
+
+  loadProducts();
+
+};
+
+async function loadProducts(){
+
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
+
+  let html = "";
+
+  let options = "<option>Select Product</option>";
+
+  querySnapshot.forEach((docSnap)=>{
+
+    const data = docSnap.data();
+
+    html += `
+      <div class="item">
+
+      Product: ${data.name}
+
+      <br>
+
+      Stock: ${data.stock}
+
+      </div>
+    `;
+
+    options += `
+      <option value="${docSnap.id}">
+        ${data.name}
+      </option>
+    `;
+
+  });
+
+  document.getElementById("productList").innerHTML = html;
+
+  document.getElementById("productSelect").innerHTML = options;
+
+  document.getElementById("returnProduct").innerHTML = options;
 
 }
 
-db.collection("products").onSnapshot((snapshot)=>{
+window.saveSale = async function(){
 
-const table = document.getElementById('productTable');
+  const productId =
+  document.getElementById("productSelect").value;
 
-table.innerHTML = "";
+  const qty =
+  Number(document.getElementById("saleQty").value);
 
-snapshot.forEach((doc)=>{
+  const productRef =
+  doc(db,"products",productId);
 
-const product = doc.data();
+  const productSnap =
+  await getDoc(productRef);
 
-table.innerHTML += `
-<tr>
-<td>${product.name}</td>
-<td>${product.stock}</td>
-<td>৳ ${product.price}</td>
-</tr>
-`;
+  const productData =
+  productSnap.data();
 
-});
+  if(productData.stock < qty){
 
-});
+    alert("Not Enough Stock");
+
+    return;
+
+  }
+
+  await updateDoc(productRef,{
+
+    stock: productData.stock - qty
+
+  });
+
+  await addDoc(collection(db,"sales"),{
+
+    product: productData.name,
+    qty,
+    date:new Date().toLocaleString()
+
+  });
+
+  alert("Sale Saved");
+
+  loadProducts();
+
+  loadSales();
+
+};
+
+window.returnProductFunc = async function(){
+
+  const productId =
+  document.getElementById("returnProduct").value;
+
+  const qty =
+  Number(document.getElementById("returnQty").value);
+
+  const productRef =
+  doc(db,"products",productId);
+
+  const productSnap =
+  await getDoc(productRef);
+
+  const productData =
+  productSnap.data();
+
+  await updateDoc(productRef,{
+
+    stock: productData.stock + qty
+
+  });
+
+  await addDoc(collection(db,"returns"),{
+
+    product: productData.name,
+    qty,
+    date:new Date().toLocaleString()
+
+  });
+
+  alert("Return Saved");
+
+  loadProducts();
+
+  loadReturns();
+
+};
+
+async function loadSales(){
+
+  const querySnapshot =
+  await getDocs(collection(db,"sales"));
+
+  let html = "";
+
+  querySnapshot.forEach((docSnap)=>{
+
+    const data = docSnap.data();
+
+    html += `
+      <div class="item">
+
+      Product: ${data.product}
+
+      <br>
+
+      Qty: ${data.qty}
+
+      <br>
+
+      Date: ${data.date}
+
+      </div>
+    `;
+
+  });
+
+  document.getElementById("salesList").innerHTML = html;
+
+}
+
+async function loadReturns(){
+
+  const querySnapshot =
+  await getDocs(collection(db,"returns"));
+
+  let html = "";
+
+  querySnapshot.forEach((docSnap)=>{
+
+    const data = docSnap.data();
+
+    html += `
+      <div class="item">
+
+      Product: ${data.product}
+
+      <br>
+
+      Return Qty: ${data.qty}
+
+      <br>
+
+      Date: ${data.date}
+
+      </div>
+    `;
+
+  });
+
+  document.getElementById("returnList").innerHTML = html;
+
+}
+
+loadProducts();
+
+loadSales();
+
+loadReturns();
 
 </script>
 
 </body>
-
 </html>
