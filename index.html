@@ -163,6 +163,10 @@ onkeyup="searchProduct()">
 Print Invoice
 </button>
 
+<button onclick="downloadPDF()">
+Download PDF Invoice
+</button>
+
 <h2>Product List</h2>
 <div id="productList"></div>
 </div>
@@ -541,6 +545,26 @@ loadReports();
 window.printInvoice = function(){
 
 window.print();
+
+};
+
+window.downloadPDF = function(){
+
+const content = document.body.innerHTML;
+
+const win = window.open('', '', 'height=700,width=700');
+
+win.document.write('<html><head><title>Invoice PDF</title>');
+
+win.document.write('</head><body>');
+
+win.document.write(content);
+
+win.document.write('</body></html>');
+
+win.document.close();
+
+win.print();
 
 };
 
