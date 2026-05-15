@@ -137,6 +137,10 @@ id="searchInput"
 placeholder="Search Product"
 onkeyup="searchProduct()">
 
+<button onclick="printInvoice()">
+Print Invoice
+</button>
+
 <h2>Product List</h2>
 <div id="productList"></div>
 </div>
@@ -162,7 +166,8 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs,
+getDoc,
+deleteDocs,
 doc,
 updateDoc,
 getDoc
@@ -341,6 +346,10 @@ Sell Price: ${data.sellPrice}
 Stock: ${data.stock}
 <br>
 ${data.stock <= 5 ? "⚠️ Low Stock" : ""}
+<br>
+<button onclick="deleteProduct('${docSnap.id}')">
+Delete
+</button>
 
 </div>
 `;
@@ -480,6 +489,24 @@ Date: ${data.date}
 document.getElementById("salesList").innerHTML = html;
 
 }
+
+window.deleteProduct = async function(id){
+
+await deleteDoc(doc(db,"products",id));
+
+alert("Product Deleted");
+
+loadProducts();
+
+loadDashboard();
+
+};
+
+window.printInvoice = function(){
+
+window.print();
+
+};
 
 window.searchProduct = function(){
 
