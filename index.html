@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="UTF-8">
 <title>AR Distribution</title>
@@ -28,9 +29,13 @@ Login
 <script>
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+  authDomain: "ar-distribution-ca285.firebaseapp.com",
+  projectId: "ar-distribution-ca285",
+  storageBucket: "ar-distribution-ca285.firebasestorage.app",
+  messagingSenderId: "668942550210",
+  appId: "1:668942550210:web:4b1bccf00766a3c274275b",
+  measurementId: "G-XXYQ1V1HQ6"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -44,6 +49,7 @@ firebase.auth().signInWithEmailAndPassword(email, password)
 
 .then(() => {
 document.getElementById('message').innerHTML = "Login Successful";
+window.location.href = "https://google.com";
 })
 
 .catch((error) => {
