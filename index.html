@@ -75,7 +75,11 @@ button{
 <div class="box">
 <h2>Purchase Entry</h2>
 
-<input type="text" id="purchaseName" placeholder="Product Name">
+<select id="purchaseSelect">
+<option value="">Select Existing Product</option>
+</select>
+
+<input type="text" id="purchaseName" placeholder="Or New Product Name">
 
 <input type="number" id="buyPrice" placeholder="Buy Price">
 
@@ -251,7 +255,10 @@ alert(error.message);
 
 window.savePurchase = async function(){
 
-const name =
+const selectedId =
+document.getElementById("purchaseSelect").value;
+
+const nameInput =
 document.getElementById("purchaseName").value;
 
 const buyPrice =
@@ -263,22 +270,43 @@ Number(document.getElementById("sellPrice").value);
 const qty =
 Number(document.getElementById("purchaseQty").value);
 
+if(selectedId){
+
+const productRef =
+doc(db,"products",selectedId);
+
+const productSnap =
+await getDoc(productRef);
+
+const oldData =
+productSnap.data();
+
+await updateDoc(productRef,{
+
+stock: oldData.stock + qty,
+buyPrice,
+sellPrice
+
+});
+
+}else{
+
 await addDoc(collection(db,"products"),{
 
-name,
+name:nameInput,
 buyPrice,
 sellPrice,
 stock: qty
 
 });
 
+}
+
 alert("Purchase Saved");
 
 await loadProducts();
 
 loadDashboard();
-
-console.log("Purchase dropdown updated");
 
 };
 
@@ -289,7 +317,7 @@ await getDocs(collection(db,"products"));
 
 let html = "";
 
-let options = "<option>Select Product</option>";
+let options = "<option value=''>Select Product</option>";
 
 querySnapshot.forEach((docSnap)=>{
 
@@ -322,6 +350,8 @@ document.getElementById("productList").innerHTML = html;
 document.getElementById("productSelect").innerHTML = options;
 
 document.getElementById("returnProduct").innerHTML = options;
+
+document.getElementById("purchaseSelect").innerHTML = "<option value=''>Select Existing Product</option>" + options;
 
 }
 
