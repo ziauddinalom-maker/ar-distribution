@@ -32,17 +32,26 @@ border-radius:10px;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+margin-bottom:10px;
+}
+
 button{
 background:#1565c0;
 color:white;
 padding:10px 20px;
 border:none;
 border-radius:5px;
+margin-top:10px;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
+margin-top:20px;
 }
 
 table th, table td{
@@ -58,62 +67,75 @@ text-align:center;
 <body>
 
 <div class="header">
-<h1>AR Distribution Dashboard</h1>
-<p>Distribution Management System</p>
+<h1>AR Distribution</h1>
+<p>Product Management System</p>
 </div>
 
 <div class="container">
 
 <div class="card">
-<h2>Total Sales</h2>
-<h1>৳ 52,000</h1>
+
+<h2>Add Product</h2>
+
+<input type="text" id="productName" placeholder="Product Name">
+
+<input type="number" id="productStock" placeholder="Stock">
+
+<input type="number" id="productPrice" placeholder="Price">
+
+<button onclick="addProduct()">Add Product</button>
+
 </div>
 
 <div class="card">
-<h2>Current Stock</h2>
-<h1>1250 Products</h1>
-</div>
 
-<div class="card">
-<h2>Recent Products</h2>
+<h2>Product List</h2>
 
 <table>
 
+<thead>
 <tr>
 <th>Product</th>
 <th>Stock</th>
 <th>Price</th>
 </tr>
+</thead>
 
-<tr>
-<td>Biscuit</td>
-<td>120</td>
-<td>৳ 350</td>
-</tr>
+<tbody id="productTable">
 
-<tr>
-<td>Noodles</td>
-<td>80</td>
-<td>৳ 780</td>
-</tr>
-
-<tr>
-<td>Chanachur</td>
-<td>150</td>
-<td>৳ 450</td>
-</tr>
+</tbody>
 
 </table>
 
 </div>
 
-<div class="card">
-<button>Add Product</button>
-<button>Sales Entry</button>
-<button>Return Entry</button>
 </div>
 
-</div>
+<script>
+
+function addProduct(){
+
+const name = document.getElementById('productName').value;
+const stock = document.getElementById('productStock').value;
+const price = document.getElementById('productPrice').value;
+
+const table = document.getElementById('productTable');
+
+table.innerHTML += `
+<tr>
+<td>${name}</td>
+<td>${stock}</td>
+<td>৳ ${price}</td>
+</tr>
+`;
+
+document.getElementById('productName').value = "";
+document.getElementById('productStock').value = "";
+document.getElementById('productPrice').value = "";
+
+}
+
+</script>
 
 </body>
 
