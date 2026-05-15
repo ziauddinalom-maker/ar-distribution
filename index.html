@@ -2,11 +2,8 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>AR Distribution</title>
 
 <style>
@@ -31,6 +28,7 @@ input,button,select{
   width:100%;
   padding:10px;
   margin-top:10px;
+  box-sizing:border-box;
 }
 
 button{
@@ -52,12 +50,9 @@ button{
 }
 
 </style>
-
 </head>
 
 <body>
-
-<!-- LOGIN -->
 
 <div class="box" id="loginPage">
 
@@ -67,32 +62,27 @@ button{
 
 <input type="password" id="password" placeholder="Password">
 
-<button onclick="login()">
-Login
-</button>
+<button onclick="login()">Login</button>
 
 </div>
-
-<!-- DASHBOARD -->
 
 <div id="dashboard">
 
 <div class="box">
+<h2>Purchase Entry</h2>
 
-<h2>Add Product</h2>
+<input type="text" id="purchaseName" placeholder="Product Name">
 
-<input type="text" id="name" placeholder="Product Name">
+<input type="number" id="buyPrice" placeholder="Buy Price">
 
-<input type="number" id="stock" placeholder="Stock Quantity">
+<input type="number" id="sellPrice" placeholder="Sell Price">
 
-<button onclick="saveProduct()">
-Save Product
-</button>
+<input type="number" id="purchaseQty" placeholder="Quantity">
 
+<button onclick="savePurchase()">Save Purchase</button>
 </div>
 
 <div class="box">
-
 <h2>Sales Entry</h2>
 
 <select id="productSelect">
@@ -101,14 +91,10 @@ Save Product
 
 <input type="number" id="saleQty" placeholder="Sale Quantity">
 
-<button onclick="saveSale()">
-Save Sale
-</button>
-
+<button onclick="saveSale()">Save Sale</button>
 </div>
 
 <div class="box">
-
 <h2>Return Product</h2>
 
 <select id="returnProduct">
@@ -117,34 +103,22 @@ Save Sale
 
 <input type="number" id="returnQty" placeholder="Return Quantity">
 
-<button onclick="returnProductFunc()">
-Return Product
-</button>
-
+<button onclick="returnProductFunc()">Return Product</button>
 </div>
 
 <div class="box">
-
 <h2>Product List</h2>
-
 <div id="productList"></div>
-
 </div>
 
 <div class="box">
-
 <h2>Sales History</h2>
-
 <div id="salesList"></div>
-
 </div>
 
 <div class="box">
-
 <h2>Return History</h2>
-
 <div id="returnList"></div>
-
 </div>
 
 </div>
@@ -216,9 +190,7 @@ document.getElementById("loginPage").style.display = "none";
 document.getElementById("dashboard").style.display = "block";
 
 loadProducts();
-
 loadSales();
-
 loadReturns();
 
 }catch(error){
@@ -229,22 +201,30 @@ alert(error.message);
 
 };
 
-window.saveProduct = async function(){
+window.savePurchase = async function(){
 
 const name =
-document.getElementById("name").value;
+document.getElementById("purchaseName").value;
 
-const stock =
-Number(document.getElementById("stock").value);
+const buyPrice =
+Number(document.getElementById("buyPrice").value);
+
+const sellPrice =
+Number(document.getElementById("sellPrice").value);
+
+const qty =
+Number(document.getElementById("purchaseQty").value);
 
 await addDoc(collection(db,"products"),{
 
 name,
-stock
+buyPrice,
+sellPrice,
+stock: qty
 
 });
 
-alert("Product Saved");
+alert("Purchase Saved");
 
 loadProducts();
 
@@ -267,9 +247,11 @@ html += `
 <div class="item">
 
 Product: ${data.name}
-
 <br>
-
+Buy Price: ${data.buyPrice}
+<br>
+Sell Price: ${data.sellPrice}
+<br>
 Stock: ${data.stock}
 
 </div>
@@ -311,7 +293,6 @@ productSnap.data();
 if(productData.stock < qty){
 
 alert("Not Enough Stock");
-
 return;
 
 }
@@ -322,10 +303,14 @@ stock: productData.stock - qty
 
 });
 
+const profit =
+(productData.sellPrice - productData.buyPrice) * qty;
+
 await addDoc(collection(db,"sales"),{
 
 product: productData.name,
 qty,
+profit,
 date:new Date().toLocaleString()
 
 });
@@ -333,7 +318,6 @@ date:new Date().toLocaleString()
 alert("Sale Saved");
 
 loadProducts();
-
 loadSales();
 
 };
@@ -372,7 +356,6 @@ date:new Date().toLocaleString()
 alert("Return Saved");
 
 loadProducts();
-
 loadReturns();
 
 };
@@ -392,13 +375,11 @@ html += `
 <div class="item">
 
 Product: ${data.product}
-
 <br>
-
 Qty: ${data.qty}
-
 <br>
-
+Profit: ${data.profit}
+<br>
 Date: ${data.date}
 
 </div>
@@ -425,13 +406,9 @@ html += `
 <div class="item">
 
 Product: ${data.product}
-
 <br>
-
 Return Qty: ${data.qty}
-
 <br>
-
 Date: ${data.date}
 
 </div>
@@ -446,4 +423,4 @@ document.getElementById("returnList").innerHTML = html;
 </script>
 
 </body>
-  </html>
+</html>
