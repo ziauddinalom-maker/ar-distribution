@@ -71,6 +71,11 @@ font-weight:bold;
 display:none;
 }
 
+hr{
+margin-top:20px;
+margin-bottom:20px;
+}
+
 </style>
 
 </head>
@@ -219,7 +224,7 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- MAIN DASHBOARD -->
 
 <div class="box">
 
@@ -235,6 +240,40 @@ Net Sales: 0
 
 <p id="totalProfit">
 Net Profit: 0
+</p>
+
+</div>
+
+<!-- DAILY MONTHLY REPORT -->
+
+<div class="box">
+
+<h2>Daily & Monthly Report</h2>
+
+<p id="todayPurchase">
+Today Purchase: 0
+</p>
+
+<p id="todaySales">
+Today Net Sales: 0
+</p>
+
+<p id="todayProfit">
+Today Net Profit: 0
+</p>
+
+<hr>
+
+<p id="monthlyPurchase">
+Monthly Purchase: 0
+</p>
+
+<p id="monthlySales">
+Monthly Net Sales: 0
+</p>
+
+<p id="monthlyProfit">
+Monthly Net Profit: 0
 </p>
 
 </div>
@@ -367,6 +406,7 @@ loadProducts();
 loadOrders();
 loadReturns();
 loadDashboard();
+loadReports();
 
 }
 
@@ -407,7 +447,7 @@ console.log(error);
 
 
 /* =========================
-ADD NEW PRODUCT
+ADD PRODUCT
 ========================= */
 
 window.addNewProduct = async function(){
@@ -436,7 +476,6 @@ return;
 
 }
 
-
 /* DUPLICATE CHECK */
 
 const q = query(
@@ -454,7 +493,6 @@ alert("Product Already Exists");
 return;
 
 }
-
 
 /* SAVE PRODUCT */
 
@@ -479,6 +517,7 @@ document.getElementById("openingStock").value = "";
 
 loadProducts();
 loadDashboard();
+loadReports();
 
 };
 
@@ -514,15 +553,13 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-
-/* ADD STOCK */
+/* STOCK ADD */
 
 await updateDoc(productRef,{
 
 stock:Number(data.stock) + qty
 
 });
-
 
 /* SAVE PURCHASE */
 
@@ -540,6 +577,7 @@ document.getElementById("purchaseQty").value = "";
 
 loadProducts();
 loadDashboard();
+loadReports();
 
 };
 
@@ -579,7 +617,6 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-
 /* STOCK CHECK */
 
 if(data.stock < qty){
@@ -590,8 +627,7 @@ return;
 
 }
 
-
-/* AUTO STOCK MINUS */
+/* STOCK MINUS */
 
 await updateDoc(productRef,{
 
@@ -599,14 +635,12 @@ stock:Number(data.stock) - qty
 
 });
 
-
 /* PROFIT */
 
 const profit =
 (Number(data.sellPrice)
 - Number(data.buyPrice))
 * qty;
-
 
 /* SAVE ORDER */
 
@@ -629,12 +663,13 @@ document.getElementById("orderQty").value = "";
 loadProducts();
 loadOrders();
 loadDashboard();
+loadReports();
 
 };
 
 
 /* =========================
-RETURN PRODUCT
+RETURN
 ========================= */
 
 window.returnProductFunc = async function(){
@@ -664,7 +699,6 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-
 /* STOCK PLUS */
 
 await updateDoc(productRef,{
@@ -673,14 +707,12 @@ stock:Number(data.stock) + qty
 
 });
 
-
 /* RETURN PROFIT */
 
 const profit =
 (Number(data.sellPrice)
 - Number(data.buyPrice))
 * qty;
-
 
 /* SAVE RETURN */
 
@@ -700,6 +732,7 @@ document.getElementById("returnQty").value = "";
 loadProducts();
 loadReturns();
 loadDashboard();
+loadReports();
 
 };
 
@@ -799,6 +832,7 @@ alert("Product Deleted");
 
 loadProducts();
 loadDashboard();
+loadReports();
 
 };
 
@@ -875,7 +909,7 @@ Product: ${data.product}
 
 <br>
 
-Return Qty: ${data.qty}
+Qty: ${data.qty}
 
 <br>
 
@@ -898,8 +932,7 @@ document.getElementById("returnList")
 
 
 /* =========================
-DASHBOARD
-NET SALES = ORDER - RETURN
+MAIN DASHBOARD
 ========================= */
 
 async function loadDashboard(){
@@ -923,7 +956,6 @@ let totalOrderProfit = 0;
 
 let totalReturnProfit = 0;
 
-
 /* STOCK */
 
 productSnapshot.forEach((docSnap)=>{
@@ -934,8 +966,7 @@ totalStock += Number(data.stock || 0);
 
 });
 
-
-/* ORDERS */
+/* ORDER */
 
 orderSnapshot.forEach((docSnap)=>{
 
@@ -947,8 +978,7 @@ totalOrderProfit += Number(data.profit || 0);
 
 });
 
-
-/* RETURNS */
+/* RETURN */
 
 returnSnapshot.forEach((docSnap)=>{
 
@@ -960,7 +990,6 @@ totalReturnProfit += Number(data.profit || 0);
 
 });
 
-
 /* FINAL */
 
 const finalSales =
@@ -968,7 +997,6 @@ totalOrderQty - totalReturnQty;
 
 const finalProfit =
 totalOrderProfit - totalReturnProfit;
-
 
 /* SHOW */
 
@@ -983,6 +1011,192 @@ document.getElementById("totalSales")
 document.getElementById("totalProfit")
 .innerHTML =
 "Net Profit: " + finalProfit;
+
+}
+
+
+/* =========================
+DAILY & MONTHLY REPORT
+========================= */
+
+async function loadReports(){
+
+const purchaseSnapshot =
+await getDocs(collection(db,"purchases"));
+
+const orderSnapshot =
+await getDocs(collection(db,"orders"));
+
+const returnSnapshot =
+await getDocs(collection(db,"returns"));
+
+let todayPurchase = 0;
+
+let todaySales = 0;
+
+let todayReturns = 0;
+
+let todayProfit = 0;
+
+let todayReturnProfit = 0;
+
+let monthlyPurchase = 0;
+
+let monthlySales = 0;
+
+let monthlyReturns = 0;
+
+let monthlyProfit = 0;
+
+let monthlyReturnProfit = 0;
+
+const today =
+new Date().toLocaleDateString();
+
+const currentMonth =
+new Date().getMonth();
+
+const currentYear =
+new Date().getFullYear();
+
+/* PURCHASE */
+
+purchaseSnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const itemDate =
+new Date(data.date);
+
+if(
+itemDate.toLocaleDateString() === today
+){
+
+todayPurchase += Number(data.qty || 0);
+
+}
+
+if(
+itemDate.getMonth() === currentMonth
+&&
+itemDate.getFullYear() === currentYear
+){
+
+monthlyPurchase += Number(data.qty || 0);
+
+}
+
+});
+
+/* ORDERS */
+
+orderSnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const itemDate =
+new Date(data.date);
+
+if(
+itemDate.toLocaleDateString() === today
+){
+
+todaySales += Number(data.qty || 0);
+
+todayProfit += Number(data.profit || 0);
+
+}
+
+if(
+itemDate.getMonth() === currentMonth
+&&
+itemDate.getFullYear() === currentYear
+){
+
+monthlySales += Number(data.qty || 0);
+
+monthlyProfit += Number(data.profit || 0);
+
+}
+
+});
+
+/* RETURNS */
+
+returnSnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const itemDate =
+new Date(data.date);
+
+if(
+itemDate.toLocaleDateString() === today
+){
+
+todayReturns += Number(data.qty || 0);
+
+todayReturnProfit += Number(data.profit || 0);
+
+}
+
+if(
+itemDate.getMonth() === currentMonth
+&&
+itemDate.getFullYear() === currentYear
+){
+
+monthlyReturns += Number(data.qty || 0);
+
+monthlyReturnProfit += Number(data.profit || 0);
+
+}
+
+});
+
+/* FINAL TODAY */
+
+const finalTodaySales =
+todaySales - todayReturns;
+
+const finalTodayProfit =
+todayProfit - todayReturnProfit;
+
+/* FINAL MONTH */
+
+const finalMonthlySales =
+monthlySales - monthlyReturns;
+
+const finalMonthlyProfit =
+monthlyProfit - monthlyReturnProfit;
+
+/* SHOW TODAY */
+
+document.getElementById("todayPurchase")
+.innerHTML =
+"Today Purchase: " + todayPurchase;
+
+document.getElementById("todaySales")
+.innerHTML =
+"Today Net Sales: " + finalTodaySales;
+
+document.getElementById("todayProfit")
+.innerHTML =
+"Today Net Profit: " + finalTodayProfit;
+
+/* SHOW MONTH */
+
+document.getElementById("monthlyPurchase")
+.innerHTML =
+"Monthly Purchase: " + monthlyPurchase;
+
+document.getElementById("monthlySales")
+.innerHTML =
+"Monthly Net Sales: " + finalMonthlySales;
+
+document.getElementById("monthlyProfit")
+.innerHTML =
+"Monthly Net Profit: " + finalMonthlyProfit;
 
 }
 
@@ -1023,4 +1237,4 @@ item.style.display = "none";
 </script>
 
 </body>
-</html>
+  </html>
