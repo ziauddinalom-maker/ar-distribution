@@ -2,9 +2,7 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AR Distribution</title>
@@ -63,7 +61,6 @@ display:none;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -102,11 +99,9 @@ Login
 
 <h2>Purchase Entry</h2>
 
-<input
-type="text"
-id="purchaseName"
-placeholder="Product Name"
->
+<select id="purchaseName">
+<option>Select Product</option>
+</select>
 
 <input
 type="number"
@@ -742,6 +737,9 @@ document.getElementById("orderProduct").innerHTML =
 options;
 
 document.getElementById("stockProduct").innerHTML =
+options;
+
+document.getElementById("purchaseName").innerHTML =
 options;
 
 }
