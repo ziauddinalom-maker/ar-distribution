@@ -205,7 +205,7 @@ Purchase
 </button>
 
 <button onclick="showPage('salesPage')">
-Sales
+Sales / Orders
 </button>
 
 <button onclick="showPage('returnPage')">
@@ -353,7 +353,7 @@ Save Sale
 
 <div class="box">
 
-<h2>Sales History</h2>
+<h2>Order History</h2>
 
 <div id="orderList"></div>
 
@@ -418,8 +418,6 @@ Return Product
 
 <script type="module">
 
-/* FIREBASE IMPORT */
-
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -448,21 +446,21 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+apiKey: "YOUR_API_KEY",
 
-authDomain: "ar-distribution-ca285.firebaseapp.com",
+authDomain: "YOUR_AUTH_DOMAIN",
 
-projectId: "ar-distribution-ca285",
+projectId: "YOUR_PROJECT_ID",
 
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
+storageBucket: "YOUR_STORAGE_BUCKET",
 
-messagingSenderId: "668942550210",
+messagingSenderId: "YOUR_SENDER_ID",
 
-appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+appId: "YOUR_APP_ID"
 
 };
 
-/* START FIREBASE */
+/* FIREBASE START */
 
 const app = initializeApp(firebaseConfig);
 
@@ -926,7 +924,7 @@ document.getElementById("purchaseList")
 
 }
 
-/* LOAD SALES */
+/* LOAD ORDERS */
 
 async function loadOrders(){
 
@@ -934,6 +932,16 @@ const snapshot =
 await getDocs(collection(db,"orders"));
 
 let html = "";
+
+if(snapshot.empty){
+
+html = `
+<div class="item">
+No Order History Found
+</div>
+`;
+
+}else{
 
 snapshot.forEach((docSnap)=>{
 
@@ -943,19 +951,34 @@ html += `
 
 <div class="item">
 
-Customer: ${data.customer}
+<b>Customer:</b> ${data.customer}
 
-<br>
+<br><br>
 
-Product: ${data.product}
+<b>Product:</b> ${data.product}
 
-<br>
+<br><br>
 
-Qty: ${data.qty}
+<b>Qty:</b> ${data.qty}
 
-<br>
+<br><br>
 
-Date: ${data.date}
+<b>Date:</b> ${data.date}
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOrder(
+'${docSnap.id}',
+'${data.productId}',
+${data.qty}
+)"
+>
+
+Delete Order
+
+</button>
 
 </div>
 
@@ -963,8 +986,64 @@ Date: ${data.date}
 
 });
 
+}
+
 document.getElementById("orderList")
 .innerHTML = html;
+
+}
+
+/* DELETE ORDER */
+
+window.deleteOrder = async function(
+orderId,
+productId,
+qty
+){
+
+const ok =
+confirm("Delete Order?");
+
+if(!ok){
+
+return;
+
+}
+
+try{
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+if(productSnap.exists()){
+
+const currentStock =
+Number(productSnap.data().stock || 0);
+
+await updateDoc(productRef,{
+stock: currentStock + Number(qty)
+});
+
+}
+
+await deleteDoc(
+doc(db,"orders",orderId)
+);
+
+alert("Order Deleted");
+
+loadProducts();
+loadOrders();
+loadDashboard();
+
+}catch(error){
+
+alert(error.message);
+
+}
 
 }
 
@@ -1074,4 +1153,4 @@ document.getElementById("totalStock")
 </script>
 
 </body>
-</html>
+  </html>
