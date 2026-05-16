@@ -1,3 +1,9 @@
+<!-- ===================================
+AR DISTRIBUTION PROFESSIONAL SYSTEM
+ORDER = AUTO SALES
+RETURN = AUTO SALES MINUS
+=================================== -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +11,8 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>AR Distribution</title>
 
@@ -19,7 +26,7 @@ padding:15px;
 }
 
 .box{
-background:#fff;
+background:white;
 padding:20px;
 border-radius:10px;
 max-width:700px;
@@ -45,10 +52,6 @@ border:none;
 cursor:pointer;
 }
 
-button:hover{
-opacity:0.9;
-}
-
 .deleteBtn{
 background:red;
 }
@@ -57,8 +60,8 @@ background:red;
 background:#fafafa;
 padding:10px;
 border-radius:8px;
-border:1px solid #ddd;
 margin-top:10px;
+border:1px solid #ddd;
 }
 
 .lowStock{
@@ -100,7 +103,7 @@ Login
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- MAIN DASHBOARD -->
 
 <div id="dashboard">
 
@@ -147,7 +150,9 @@ Add Product
 <h2>Purchase Entry</h2>
 
 <select id="purchaseProduct">
-<option value="">Select Product</option>
+<option value="">
+Select Product
+</option>
 </select>
 
 <input
@@ -157,29 +162,37 @@ placeholder="Purchase Quantity"
 >
 
 <button onclick="savePurchase()">
-Add Purchase Stock
+Add Stock
 </button>
 
 </div>
 
-<!-- SALES -->
+<!-- ORDER ENTRY -->
 
 <div class="box">
 
-<h2>Sales Entry</h2>
+<h2>Order Entry</h2>
 
-<select id="saleProduct">
-<option value="">Select Product</option>
+<input
+type="text"
+id="customerName"
+placeholder="Customer Name"
+>
+
+<select id="orderProduct">
+<option value="">
+Select Product
+</option>
 </select>
 
 <input
 type="number"
-id="saleQty"
-placeholder="Sale Quantity"
+id="orderQty"
+placeholder="Order Quantity"
 >
 
-<button onclick="saveSale()">
-Save Sale
+<button onclick="saveOrder()">
+Save Order
 </button>
 
 </div>
@@ -191,7 +204,9 @@ Save Sale
 <h2>Return Product</h2>
 
 <select id="returnProduct">
-<option value="">Select Product</option>
+<option value="">
+Select Product
+</option>
 </select>
 
 <input
@@ -212,11 +227,17 @@ Return Product
 
 <h2>Dashboard</h2>
 
-<p id="totalStock">Total Stock: 0</p>
+<p id="totalStock">
+Total Stock: 0
+</p>
 
-<p id="totalSales">Total Sales: 0</p>
+<p id="totalSales">
+Total Sales: 0
+</p>
 
-<p id="totalProfit">Total Profit: 0</p>
+<p id="totalProfit">
+Total Profit: 0
+</p>
 
 </div>
 
@@ -245,13 +266,13 @@ onkeyup="searchProduct()"
 
 </div>
 
-<!-- SALES HISTORY -->
+<!-- ORDER HISTORY -->
 
 <div class="box">
 
-<h2>Sales History</h2>
+<h2>Order History</h2>
 
-<div id="salesList"></div>
+<div id="orderList"></div>
 
 </div>
 
@@ -267,11 +288,9 @@ onkeyup="searchProduct()"
 
 </div>
 
-<script type="module">
+<!-- FIREBASE SCRIPT -->
 
-/* =========================
-FIREBASE IMPORT
-========================= */
+<script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -298,9 +317,8 @@ onAuthStateChanged
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-/* =========================
-FIREBASE CONFIG
-========================= */
+
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 
@@ -319,9 +337,8 @@ appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 };
 
 
-/* =========================
-INIT FIREBASE
-========================= */
+
+/* START FIREBASE */
 
 const app = initializeApp(firebaseConfig);
 
@@ -330,22 +347,21 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-/* =========================
-AUTO LOGIN
-========================= */
+
+/* AUTO LOGIN */
 
 onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
-document.getElementById("loginPage").style.display =
-"none";
+document.getElementById("loginPage")
+.style.display = "none";
 
-document.getElementById("dashboard").style.display =
-"block";
+document.getElementById("dashboard")
+.style.display = "block";
 
 loadProducts();
-loadSales();
+loadOrders();
 loadReturns();
 loadDashboard();
 
@@ -354,9 +370,8 @@ loadDashboard();
 });
 
 
-/* =========================
-LOGIN
-========================= */
+
+/* LOGIN */
 
 window.login = async function(){
 
@@ -380,30 +395,31 @@ alert("Login Successful");
 
 alert(error.message);
 
-console.log(error);
-
 }
 
 };
 
 
-/* =========================
-ADD NEW PRODUCT
-========================= */
+
+/* ADD PRODUCT */
 
 window.addNewProduct = async function(){
 
 const name =
-document.getElementById("newProductName").value.trim();
+document.getElementById("newProductName")
+.value.trim();
 
 const buyPrice =
-Number(document.getElementById("newBuyPrice").value);
+Number(document.getElementById("newBuyPrice")
+.value);
 
 const sellPrice =
-Number(document.getElementById("newSellPrice").value);
+Number(document.getElementById("newSellPrice")
+.value);
 
 const stock =
-Number(document.getElementById("openingStock").value);
+Number(document.getElementById("openingStock")
+.value);
 
 if(!name){
 
@@ -413,6 +429,8 @@ return;
 
 }
 
+
+
 /* DUPLICATE CHECK */
 
 const q = query(
@@ -420,10 +438,9 @@ collection(db,"products"),
 where("name","==",name)
 );
 
-const querySnapshot =
-await getDocs(q);
+const snapshot = await getDocs(q);
 
-if(!querySnapshot.empty){
+if(!snapshot.empty){
 
 alert("Product Already Exists");
 
@@ -431,7 +448,9 @@ return;
 
 }
 
-/* SAVE */
+
+
+/* SAVE PRODUCT */
 
 await addDoc(collection(db,"products"),{
 
@@ -444,28 +463,24 @@ stock
 
 alert("Product Added");
 
-document.getElementById("newProductName").value = "";
-document.getElementById("newBuyPrice").value = "";
-document.getElementById("newSellPrice").value = "";
-document.getElementById("openingStock").value = "";
-
 loadProducts();
 loadDashboard();
 
 };
 
 
-/* =========================
-PURCHASE STOCK
-========================= */
+
+/* PURCHASE */
 
 window.savePurchase = async function(){
 
 const productId =
-document.getElementById("purchaseProduct").value;
+document.getElementById("purchaseProduct")
+.value;
 
 const qty =
-Number(document.getElementById("purchaseQty").value);
+Number(document.getElementById("purchaseQty")
+.value);
 
 if(!productId){
 
@@ -484,11 +499,15 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
+
+
 await updateDoc(productRef,{
 
-stock: Number(data.stock) + qty
+stock:Number(data.stock) + qty
 
 });
+
+
 
 await addDoc(collection(db,"purchases"),{
 
@@ -500,25 +519,28 @@ date:new Date().toLocaleString()
 
 alert("Purchase Saved");
 
-document.getElementById("purchaseQty").value = "";
-
 loadProducts();
 loadDashboard();
 
 };
 
 
-/* =========================
-SAVE SALE
-========================= */
 
-window.saveSale = async function(){
+/* ORDER ENTRY */
+
+window.saveOrder = async function(){
+
+const customer =
+document.getElementById("customerName")
+.value;
 
 const productId =
-document.getElementById("saleProduct").value;
+document.getElementById("orderProduct")
+.value;
 
 const qty =
-Number(document.getElementById("saleQty").value);
+Number(document.getElementById("orderQty")
+.value);
 
 if(!productId){
 
@@ -536,6 +558,8 @@ await getDoc(productRef);
 
 const data =
 productSnap.data();
+
+
 
 if(data.stock < qty){
 
@@ -545,24 +569,32 @@ return;
 
 }
 
-/* UPDATE STOCK */
+
+
+/* AUTO STOCK MINUS */
 
 await updateDoc(productRef,{
 
-stock: Number(data.stock) - qty
+stock:Number(data.stock) - qty
 
 });
 
-/* PROFIT */
+
+
+/* AUTO PROFIT */
 
 const profit =
-(Number(data.sellPrice) - Number(data.buyPrice))
+(Number(data.sellPrice)
+- Number(data.buyPrice))
 * qty;
 
-/* SAVE SALES */
 
-await addDoc(collection(db,"sales"),{
 
+/* SAVE ORDER */
+
+await addDoc(collection(db,"orders"),{
+
+customer,
 product:data.name,
 qty,
 profit,
@@ -570,28 +602,27 @@ date:new Date().toLocaleString()
 
 });
 
-alert("Sale Saved");
-
-document.getElementById("saleQty").value = "";
+alert("Order Saved");
 
 loadProducts();
-loadSales();
+loadOrders();
 loadDashboard();
 
 };
 
 
-/* =========================
-RETURN PRODUCT
-========================= */
+
+/* RETURN */
 
 window.returnProductFunc = async function(){
 
 const productId =
-document.getElementById("returnProduct").value;
+document.getElementById("returnProduct")
+.value;
 
 const qty =
-Number(document.getElementById("returnQty").value);
+Number(document.getElementById("returnQty")
+.value);
 
 if(!productId){
 
@@ -610,7 +641,9 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-/* ADD STOCK */
+
+
+/* STOCK PLUS */
 
 await updateDoc(productRef,{
 
@@ -618,7 +651,9 @@ stock:Number(data.stock) + qty
 
 });
 
-/* SAVE RETURN */
+
+
+/* RETURN SAVE */
 
 await addDoc(collection(db,"returns"),{
 
@@ -630,8 +665,6 @@ date:new Date().toLocaleString()
 
 alert("Return Saved");
 
-document.getElementById("returnQty").value = "";
-
 loadProducts();
 loadReturns();
 loadDashboard();
@@ -639,9 +672,8 @@ loadDashboard();
 };
 
 
-/* =========================
-LOAD PRODUCTS
-========================= */
+
+/* LOAD PRODUCTS */
 
 async function loadProducts(){
 
@@ -707,24 +739,23 @@ ${data.name}
 
 });
 
-document.getElementById("productList").innerHTML =
-html;
+document.getElementById("productList")
+.innerHTML = html;
 
-document.getElementById("purchaseProduct").innerHTML =
-options;
+document.getElementById("purchaseProduct")
+.innerHTML = options;
 
-document.getElementById("saleProduct").innerHTML =
-options;
+document.getElementById("orderProduct")
+.innerHTML = options;
 
-document.getElementById("returnProduct").innerHTML =
-options;
+document.getElementById("returnProduct")
+.innerHTML = options;
 
 }
 
 
-/* =========================
-DELETE PRODUCT
-========================= */
+
+/* DELETE PRODUCT */
 
 window.deleteProduct = async function(id){
 
@@ -738,14 +769,13 @@ loadDashboard();
 };
 
 
-/* =========================
-LOAD SALES
-========================= */
 
-async function loadSales(){
+/* LOAD ORDERS */
+
+async function loadOrders(){
 
 const snapshot =
-await getDocs(collection(db,"sales"));
+await getDocs(collection(db,"orders"));
 
 let html = "";
 
@@ -756,6 +786,10 @@ const data = docSnap.data();
 html += `
 
 <div class="item">
+
+Customer: ${data.customer}
+
+<br>
 
 Product: ${data.product}
 
@@ -777,15 +811,14 @@ Date: ${data.date}
 
 });
 
-document.getElementById("salesList").innerHTML =
-html;
+document.getElementById("orderList")
+.innerHTML = html;
 
 }
 
 
-/* =========================
-LOAD RETURNS
-========================= */
+
+/* LOAD RETURNS */
 
 async function loadReturns(){
 
@@ -806,7 +839,7 @@ Product: ${data.product}
 
 <br>
 
-Return Qty: ${data.qty}
+Qty: ${data.qty}
 
 <br>
 
@@ -818,29 +851,30 @@ Date: ${data.date}
 
 });
 
-document.getElementById("returnList").innerHTML =
-html;
+document.getElementById("returnList")
+.innerHTML = html;
 
 }
 
 
-/* =========================
-DASHBOARD
-========================= */
+
+/* DASHBOARD */
 
 async function loadDashboard(){
 
 const productSnapshot =
 await getDocs(collection(db,"products"));
 
-const salesSnapshot =
-await getDocs(collection(db,"sales"));
+const orderSnapshot =
+await getDocs(collection(db,"orders"));
 
 let totalStock = 0;
 
 let totalSales = 0;
 
 let totalProfit = 0;
+
+
 
 productSnapshot.forEach((docSnap)=>{
 
@@ -850,7 +884,9 @@ totalStock += Number(data.stock || 0);
 
 });
 
-salesSnapshot.forEach((docSnap)=>{
+
+
+orderSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
@@ -860,21 +896,25 @@ totalProfit += Number(data.profit || 0);
 
 });
 
-document.getElementById("totalStock").innerHTML =
+
+
+document.getElementById("totalStock")
+.innerHTML =
 "Total Stock: " + totalStock;
 
-document.getElementById("totalSales").innerHTML =
+document.getElementById("totalSales")
+.innerHTML =
 "Total Sales: " + totalSales;
 
-document.getElementById("totalProfit").innerHTML =
+document.getElementById("totalProfit")
+.innerHTML =
 "Total Profit: " + totalProfit;
 
 }
 
 
-/* =========================
-SEARCH PRODUCT
-========================= */
+
+/* SEARCH */
 
 window.searchProduct = function(){
 
@@ -908,4 +948,4 @@ item.style.display = "none";
 </script>
 
 </body>
-</html>
+  </html>
