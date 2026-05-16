@@ -198,6 +198,14 @@ Returns
 Reports
 </button>
 
+<button onclick="refreshData()">
+Refresh Data
+</button>
+
+<button onclick="logout()">
+Logout
+</button>
+
 </div>
 
 <!-- MAIN -->
@@ -406,7 +414,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
 getAuth,
 signInWithEmailAndPassword,
-onAuthStateChanged
+onAuthStateChanged,
+signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -501,6 +510,34 @@ alert(error.message);
 }
 
 };
+
+/* LOGOUT */
+
+window.logout = async function(){
+
+await signOut(auth);
+
+alert("Logged Out");
+
+location.reload();
+
+}
+
+/* REFRESH */
+
+window.refreshData = function(){
+
+loadProducts();
+loadPurchases();
+loadOrders();
+loadReturns();
+loadStockHistory();
+loadDashboard();
+loadSalesReports();
+
+alert("Data Refreshed");
+
+}
 
 /* STOCK HISTORY */
 
