@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -141,7 +140,6 @@ margin-left:0;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -196,6 +194,10 @@ Returns
 
 <button onclick="showPage('reportPage')">
 Reports
+</button>
+
+<button onclick="showPage('officerPage')">
+Officers
 </button>
 
 <button onclick="refreshData()">
@@ -388,6 +390,34 @@ This Month Sales Qty: 0
 
 </div>
 
+<!-- OFFICER PAGE -->
+
+<div id="officerPage" class="page">
+
+<div class="box">
+
+<h2>Add Officer</h2>
+
+<input type="text" id="officerName" placeholder="Officer Name">
+
+<input type="email" id="officerEmail" placeholder="Officer Email">
+
+<button class="actionBtn" onclick="addOfficer()">
+Save Officer
+</button>
+
+</div>
+
+<div class="box">
+
+<h2>Officer List</h2>
+
+<div id="officerList"></div>
+
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -478,6 +508,7 @@ loadReturns();
 loadStockHistory();
 loadDashboard();
 loadSalesReports();
+loadOfficers();
 
 }
 
@@ -534,6 +565,7 @@ loadReturns();
 loadStockHistory();
 loadDashboard();
 loadSalesReports();
+loadOfficers();
 
 alert("Data Refreshed");
 
@@ -781,6 +813,38 @@ loadDashboard();
 
 };
 
+/* ADD OFFICER */
+
+window.addOfficer = async function(){
+
+const name =
+document.getElementById("officerName").value;
+
+const email =
+document.getElementById("officerEmail").value;
+
+if(!name || !email){
+
+alert("Enter Correct Data");
+return;
+
+}
+
+await addDoc(collection(db,"officers"),{
+
+name,
+email,
+role:"officer",
+date:new Date().toLocaleString()
+
+});
+
+alert("Officer Added");
+
+loadOfficers();
+
+}
+
 /* LOAD PRODUCTS */
 
 async function loadProducts(){
@@ -857,26 +921,6 @@ document.getElementById("returnProduct")
 
 }
 
-/* DELETE PRODUCT */
-
-window.deleteProduct = async function(id){
-
-const ok =
-confirm("Delete Product?");
-
-if(!ok){
-return;
-}
-
-await deleteDoc(doc(db,"products",id));
-
-alert("Product Deleted");
-
-loadProducts();
-loadDashboard();
-
-};
-
 /* LOAD PURCHASES */
 
 async function loadPurchases(){
@@ -946,21 +990,6 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteOrder(
-'${docSnap.id}',
-'${data.productId}',
-${data.qty}
-)"
->
-
-Delete Order
-
-</button>
-
 </div>
 
 `;
@@ -969,59 +998,6 @@ Delete Order
 
 document.getElementById("orderList")
 .innerHTML = html;
-
-}
-
-/* DELETE ORDER */
-
-window.deleteOrder = async function(
-orderId,
-productId,
-qty
-){
-
-const ok =
-confirm("Delete Order?");
-
-if(!ok){
-return;
-}
-
-try{
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-if(productSnap.exists()){
-
-const currentStock =
-Number(productSnap.data().stock || 0);
-
-await updateDoc(productRef,{
-stock: currentStock + Number(qty)
-});
-
-}
-
-await deleteDoc(
-doc(db,"orders",orderId)
-);
-
-alert("Order Deleted");
-
-loadProducts();
-loadOrders();
-loadDashboard();
-loadSalesReports();
-
-}catch(error){
-
-alert(error.message);
-
-}
 
 }
 
@@ -1063,7 +1039,71 @@ document.getElementById("returnList")
 
 }
 
-/* LOAD STOCK HISTORY */
+/* LOAD OFFICERS */
+
+async function loadOfficers(){
+
+const snapshot =
+await getDocs(collection(db,"officers"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Officer Name: ${data.name}
+
+<br>
+
+Officer Email: ${data.email}
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOfficer('${docSnap.id}')"
+>
+
+Delete Officer
+
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("officerList")
+.innerHTML = html;
+
+}
+
+/* DELETE OFFICER */
+
+window.deleteOfficer = async function(id){
+
+const ok =
+confirm("Delete Officer?");
+
+if(!ok){
+return;
+}
+
+await deleteDoc(doc(db,"officers",id));
+
+alert("Officer Deleted");
+
+loadOfficers();
+
+}
+
+/* STOCK HISTORY */
 
 async function loadStockHistory(){
 
