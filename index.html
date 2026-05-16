@@ -134,6 +134,56 @@ Save Purchase
 
 </div>
 
+<!-- STOCK ENTRY -->
+
+<div class="box">
+
+<h2>Stock Entry</h2>
+
+<select id="stockProduct">
+<option>Select Product</option>
+</select>
+
+<input
+type="number"
+id="stockQty"
+placeholder="Add Stock Quantity"
+>
+
+<button onclick="addStock()">
+Add Stock
+</button>
+
+</div>
+
+<!-- ORDER ENTRY -->
+
+<div class="box">
+
+<h2>Order Entry</h2>
+
+<input
+type="text"
+id="customerName"
+placeholder="Customer Name"
+>
+
+<select id="orderProduct">
+<option>Select Product</option>
+</select>
+
+<input
+type="number"
+id="orderQty"
+placeholder="Order Quantity"
+>
+
+<button onclick="saveOrder()">
+Save Order
+</button>
+
+</div>
+
 <!-- SALES -->
 
 <div class="box">
@@ -178,7 +228,7 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD REPORT -->
+<!-- DASHBOARD -->
 
 <div class="box">
 
@@ -198,7 +248,7 @@ Total Profit: 0
 
 </div>
 
-<!-- DAILY MONTHLY REPORT -->
+<!-- DAILY REPORT -->
 
 <div class="box">
 
@@ -254,6 +304,16 @@ onkeyup="searchProduct()"
 <h2>Sales History</h2>
 
 <div id="salesList"></div>
+
+</div>
+
+<!-- ORDER HISTORY -->
+
+<div class="box">
+
+<h2>Order History</h2>
+
+<div id="orderList"></div>
 
 </div>
 
@@ -351,6 +411,8 @@ loadProducts();
 
 loadSales();
 
+loadOrders();
+
 loadReturns();
 
 loadDashboard();
@@ -366,8 +428,6 @@ loadReports();
 // LOGIN
 
 window.login = async function(){
-
-console.log("Login Clicked");
 
 const email =
 document.getElementById("email").value;
@@ -385,27 +445,9 @@ password
 
 alert("Login Successful");
 
-document.getElementById("loginPage").style.display =
-"none";
-
-document.getElementById("dashboard").style.display =
-"block";
-
-loadProducts();
-
-loadSales();
-
-loadReturns();
-
-loadDashboard();
-
-loadReports();
-
 }catch(error){
 
 alert(error.message);
-
-console.log(error);
 
 }
 
@@ -429,14 +471,6 @@ Number(document.getElementById("sellPrice").value);
 const qty =
 Number(document.getElementById("purchaseQty").value);
 
-if(!name || qty<=0){
-
-alert("Enter valid data");
-
-return;
-
-}
-
 await addDoc(collection(db,"products"),{
 
 name,
@@ -448,15 +482,186 @@ stock: qty
 
 alert("Purchase Saved");
 
-document.getElementById("purchaseName").value = "";
+loadProducts();
 
-document.getElementById("buyPrice").value = "";
+loadDashboard();
 
-document.getElementById("sellPrice").value = "";
+};
 
-document.getElementById("purchaseQty").value = "";
+
+
+// ADD STOCK
+
+window.addStock = async function(){
+
+const productId =
+document.getElementById("stockProduct").value;
+
+const qty =
+Number(document.getElementById("stockQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+await updateDoc(productRef,{
+
+stock: productData.stock + qty
+
+});
+
+alert("Stock Added");
 
 loadProducts();
+
+loadDashboard();
+
+};
+
+
+
+// SAVE ORDER
+
+window.saveOrder = async function(){
+
+const customer =
+document.getElementById("customerName").value;
+
+const productId =
+document.getElementById("orderProduct").value;
+
+const qty =
+Number(document.getElementById("orderQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+await addDoc(collection(db,"orders"),{
+
+customer,
+product: productData.name,
+qty,
+date:new Date().toLocaleString()
+
+});
+
+alert("Order Saved");
+
+loadOrders();
+
+};
+
+
+
+// SAVE SALE
+
+window.saveSale = async function(){
+
+const productId =
+document.getElementById("productSelect").value;
+
+const qty =
+Number(document.getElementById("saleQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+if(productData.stock < qty){
+
+alert("Not Enough Stock");
+
+return;
+
+}
+
+await updateDoc(productRef,{
+
+stock: productData.stock - qty
+
+});
+
+const profit =
+(productData.sellPrice - productData.buyPrice)
+* qty;
+
+await addDoc(collection(db,"sales"),{
+
+product: productData.name,
+qty,
+profit,
+date:new Date().toLocaleString()
+
+});
+
+alert("Sale Saved");
+
+loadProducts();
+
+loadSales();
+
+loadDashboard();
+
+loadReports();
+
+};
+
+
+
+// RETURN PRODUCT
+
+window.returnProductFunc = async function(){
+
+const productId =
+document.getElementById("returnProduct").value;
+
+const qty =
+Number(document.getElementById("returnQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+await updateDoc(productRef,{
+
+stock: productData.stock + qty
+
+});
+
+await addDoc(collection(db,"returns"),{
+
+product: productData.name,
+qty,
+date:new Date().toLocaleString()
+
+});
+
+alert("Return Saved");
+
+loadProducts();
+
+loadReturns();
 
 loadDashboard();
 
@@ -530,6 +735,12 @@ options;
 document.getElementById("returnProduct").innerHTML =
 options;
 
+document.getElementById("orderProduct").innerHTML =
+options;
+
+document.getElementById("stockProduct").innerHTML =
+options;
+
 }
 
 
@@ -538,127 +749,9 @@ options;
 
 window.deleteProduct = async function(id){
 
-if(confirm("Delete this product?")){
-
 await deleteDoc(doc(db,"products",id));
 
 loadProducts();
-
-loadDashboard();
-
-}
-
-};
-
-
-
-// SAVE SALE
-
-window.saveSale = async function(){
-
-const productId =
-document.getElementById("productSelect").value;
-
-const qty =
-Number(document.getElementById("saleQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-if(productData.stock < qty){
-
-alert("Not Enough Stock");
-
-return;
-
-}
-
-await updateDoc(productRef,{
-
-stock: productData.stock - qty
-
-});
-
-const profit =
-(productData.sellPrice - productData.buyPrice)
-* qty;
-
-await addDoc(collection(db,"sales"),{
-
-product: productData.name,
-
-qty,
-
-profit,
-
-date:new Date().toLocaleString()
-
-});
-
-alert("Sale Saved");
-
-document.getElementById("saleQty").value = "";
-
-loadProducts();
-
-loadSales();
-
-loadDashboard();
-
-loadReports();
-
-};
-
-
-
-// RETURN PRODUCT
-
-window.returnProductFunc = async function(){
-
-const productId =
-document.getElementById("returnProduct").value;
-
-const qty =
-Number(document.getElementById("returnQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-await updateDoc(productRef,{
-
-stock: productData.stock + qty
-
-});
-
-await addDoc(collection(db,"returns"),{
-
-product: productData.name,
-
-qty,
-
-date:new Date().toLocaleString()
-
-});
-
-alert("Return Saved");
-
-document.getElementById("returnQty").value = "";
-
-loadProducts();
-
-loadReturns();
 
 loadDashboard();
 
@@ -682,7 +775,7 @@ const data = docSnap.data();
 html += `
 <div class="item">
 
-<b>${data.product}</b>
+Product: ${data.product}
 
 <br>
 
@@ -708,6 +801,48 @@ html;
 
 
 
+// LOAD ORDERS
+
+async function loadOrders(){
+
+const querySnapshot =
+await getDocs(collection(db,"orders"));
+
+let html = "";
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+<div class="item">
+
+Customer: ${data.customer}
+
+<br>
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+`;
+
+});
+
+document.getElementById("orderList").innerHTML =
+html;
+
+}
+
+
+
 // LOAD RETURNS
 
 async function loadReturns(){
@@ -724,7 +859,7 @@ const data = docSnap.data();
 html += `
 <div class="item">
 
-<b>${data.product}</b>
+Product: ${data.product}
 
 <br>
 
@@ -903,5 +1038,4 @@ window.print();
 </script>
 
 </body>
-
-</html>
+  </html>
