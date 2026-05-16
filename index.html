@@ -303,6 +303,16 @@ onkeyup="searchProduct()"
 
 </div>
 
+<!-- PURCHASE HISTORY -->
+
+<div class="box">
+
+<h2>Purchase History</h2>
+
+<div id="purchaseList"></div>
+
+</div>
+
 <!-- ORDER HISTORY -->
 
 <div class="box">
@@ -403,6 +413,7 @@ document.getElementById("dashboard")
 .style.display = "block";
 
 loadProducts();
+loadPurchases();
 loadOrders();
 loadReturns();
 loadDashboard();
@@ -555,6 +566,7 @@ stock:Number(data.stock) + qty
 await addDoc(collection(db,"purchases"),{
 
 product:data.name,
+productId: productId,
 qty,
 date:new Date().toLocaleString()
 
@@ -565,6 +577,7 @@ alert("Purchase Saved");
 document.getElementById("purchaseQty").value = "";
 
 loadProducts();
+loadPurchases();
 loadDashboard();
 loadReports();
 
@@ -813,6 +826,72 @@ loadReports();
 
 
 /* =========================
+DELETE PURCHASE
+========================= */
+
+window.deletePurchase = async function(
+purchaseId,
+productId,
+qty
+){
+
+const confirmDelete =
+confirm("Delete this purchase?");
+
+if(!confirmDelete){
+
+return;
+
+}
+
+try{
+
+if(productId){
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+if(productSnap.exists()){
+
+const currentStock =
+Number(productSnap.data().stock || 0);
+
+await updateDoc(productRef,{
+
+stock: currentStock - Number(qty)
+
+});
+
+}
+
+}
+
+await deleteDoc(
+doc(db,"purchases",purchaseId)
+);
+
+alert("Purchase Deleted");
+
+loadProducts();
+loadPurchases();
+loadDashboard();
+loadReports();
+
+}catch(error){
+
+console.log(error);
+
+alert("Delete Failed");
+
+}
+
+};
+
+
+/* =========================
 DELETE ORDER
 ========================= */
 
@@ -876,6 +955,62 @@ alert("Delete Failed");
 }
 
 };
+
+
+/* =========================
+LOAD PURCHASES
+========================= */
+
+async function loadPurchases(){
+
+const snapshot =
+await getDocs(collection(db,"purchases"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+<br><br>
+
+<button
+class="deleteBtn"
+onclick="deletePurchase(
+'${docSnap.id}',
+'${data.productId || ""}',
+${data.qty}
+)"
+>
+
+Delete Purchase
+
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("purchaseList")
+.innerHTML = html;
+
+}
 
 
 /* =========================
@@ -1261,4 +1396,4 @@ item.style.display = "none";
 </script>
 
 </body>
-  </html>
+</html>
