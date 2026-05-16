@@ -316,7 +316,7 @@ Save Sale
 
 </div>
 
-<!-- RETURNS -->
+<!-- RETURN -->
 
 <div id="returnPage" class="page">
 
@@ -349,6 +349,26 @@ Return Product
 <!-- REPORT -->
 
 <div id="reportPage" class="page">
+
+<div class="box">
+
+<h2>Daily Sales Report</h2>
+
+<p id="dailySales">
+Today's Sales Qty: 0
+</p>
+
+</div>
+
+<div class="box">
+
+<h2>Monthly Sales Report</h2>
+
+<p id="monthlySales">
+This Month Sales Qty: 0
+</p>
+
+</div>
 
 <div class="box">
 
@@ -408,8 +428,6 @@ appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
 
-/* FIREBASE */
-
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
@@ -450,6 +468,7 @@ loadOrders();
 loadReturns();
 loadStockHistory();
 loadDashboard();
+loadSalesReports();
 
 }
 
@@ -670,6 +689,7 @@ loadProducts();
 loadOrders();
 loadStockHistory();
 loadDashboard();
+loadSalesReports();
 
 };
 
@@ -867,16 +887,6 @@ await getDocs(collection(db,"orders"));
 
 let html = "";
 
-if(snapshot.empty){
-
-html = `
-<div class="item">
-No Order History Found
-</div>
-`;
-
-}else{
-
 snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
@@ -885,19 +895,19 @@ html += `
 
 <div class="item">
 
-<b>Customer:</b> ${data.customer}
+Customer: ${data.customer}
 
-<br><br>
+<br>
 
-<b>Product:</b> ${data.product}
+Product: ${data.product}
 
-<br><br>
+<br>
 
-<b>Qty:</b> ${data.qty}
+Qty: ${data.qty}
 
-<br><br>
+<br>
 
-<b>Date:</b> ${data.date}
+Date: ${data.date}
 
 <br><br>
 
@@ -919,8 +929,6 @@ Delete Order
 `;
 
 });
-
-}
 
 document.getElementById("orderList")
 .innerHTML = html;
@@ -970,6 +978,7 @@ alert("Order Deleted");
 loadProducts();
 loadOrders();
 loadDashboard();
+loadSalesReports();
 
 }catch(error){
 
@@ -1079,6 +1088,75 @@ totalStock += Number(data.stock || 0);
 document.getElementById("totalStock")
 .innerHTML =
 "Total Stock: " + totalStock;
+
+}
+
+/* SALES REPORT */
+
+async function loadSalesReports(){
+
+const snapshot =
+await getDocs(collection(db,"orders"));
+
+let dailyTotal = 0;
+
+let monthlyTotal = 0;
+
+const now = new Date();
+
+const today =
+now.toLocaleDateString();
+
+const currentMonth =
+now.getMonth();
+
+const currentYear =
+now.getFullYear();
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const qty =
+Number(data.qty || 0);
+
+const orderDate =
+new Date(data.date);
+
+const orderDay =
+orderDate.toLocaleDateString();
+
+const orderMonth =
+orderDate.getMonth();
+
+const orderYear =
+orderDate.getFullYear();
+
+if(orderDay === today){
+
+dailyTotal += qty;
+
+}
+
+if(
+orderMonth === currentMonth
+&&
+orderYear === currentYear
+){
+
+monthlyTotal += qty;
+
+}
+
+});
+
+document.getElementById("dailySales")
+.innerHTML =
+"Today's Sales Qty: " + dailyTotal;
+
+document.getElementById("monthlySales")
+.innerHTML =
+"This Month Sales Qty: " + monthlyTotal;
 
 }
 
