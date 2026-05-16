@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AR Distribution</title>
@@ -48,7 +50,7 @@ opacity:0.9;
 }
 
 .item{
-background:#ffffff;
+background:#fff;
 padding:10px;
 margin-top:10px;
 border-radius:5px;
@@ -88,7 +90,7 @@ id="password"
 placeholder="Password"
 >
 
-<button id="loginBtn">
+<button type="button" id="loginBtn">
 Login
 </button>
 
@@ -134,7 +136,7 @@ Save Purchase
 
 </div>
 
-<!-- STOCK ENTRY -->
+<!-- STOCK -->
 
 <div class="box">
 
@@ -156,7 +158,7 @@ Add Stock
 
 </div>
 
-<!-- ORDER ENTRY -->
+<!-- ORDER -->
 
 <div class="box">
 
@@ -228,7 +230,7 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD REPORT -->
 
 <div class="box">
 
@@ -248,7 +250,7 @@ Total Profit: 0
 
 </div>
 
-<!-- REPORT -->
+<!-- DAILY REPORT -->
 
 <div class="box">
 
@@ -339,7 +341,7 @@ Download PDF
 
 </div>
 
-<script type="module">
+<script type="module" defer>
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -420,7 +422,7 @@ loadReports();
 
 
 
-// LOGIN FUNCTION
+// LOGIN
 
 async function login(){
 
@@ -463,9 +465,17 @@ console.log(error);
 
 }
 
+
+
+// BUTTON EVENT
+
+window.addEventListener("DOMContentLoaded",()=>{
+
 document
 .getElementById("loginBtn")
 .addEventListener("click", login);
+
+});
 
 
 
@@ -803,7 +813,7 @@ Date: ${data.date}
 document.getElementById("salesList").innerHTML =
 html;
 
-};
+}
 
 
 
@@ -845,7 +855,7 @@ Date: ${data.date}
 document.getElementById("orderList").innerHTML =
 html;
 
-};
+}
 
 
 
@@ -883,7 +893,7 @@ Date: ${data.date}
 document.getElementById("returnList").innerHTML =
 html;
 
-};
+}
 
 
 
@@ -934,7 +944,7 @@ document.getElementById("totalProfit").innerHTML =
 
 
 
-// DAILY & MONTHLY REPORT
+// REPORTS
 
 async function loadReports(){
 
@@ -1000,7 +1010,7 @@ document.getElementById("monthlyProfit").innerHTML =
 
 
 
-// SEARCH PRODUCT
+// SEARCH
 
 window.searchProduct = function(){
 
@@ -1044,4 +1054,4 @@ window.print();
 </script>
 
 </body>
-</html>
+  </html>
