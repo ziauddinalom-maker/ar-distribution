@@ -1,9 +1,3 @@
-<!-- ===================================
-AR DISTRIBUTION PROFESSIONAL SYSTEM
-ORDER = AUTO SALES
-RETURN = AUTO SALES MINUS
-=================================== -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,6 +44,10 @@ background:#0d6efd;
 color:white;
 border:none;
 cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
 }
 
 .deleteBtn{
@@ -103,7 +101,7 @@ Login
 
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- DASHBOARD -->
 
 <div id="dashboard">
 
@@ -167,7 +165,7 @@ Add Stock
 
 </div>
 
-<!-- ORDER ENTRY -->
+<!-- ORDER -->
 
 <div class="box">
 
@@ -232,11 +230,11 @@ Total Stock: 0
 </p>
 
 <p id="totalSales">
-Total Sales: 0
+Net Sales: 0
 </p>
 
 <p id="totalProfit">
-Total Profit: 0
+Net Profit: 0
 </p>
 
 </div>
@@ -288,9 +286,11 @@ onkeyup="searchProduct()"
 
 </div>
 
-<!-- FIREBASE SCRIPT -->
-
 <script type="module">
+
+/* =========================
+FIREBASE IMPORT
+========================= */
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -317,8 +317,9 @@ onAuthStateChanged
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-
-/* FIREBASE CONFIG */
+/* =========================
+FIREBASE CONFIG
+========================= */
 
 const firebaseConfig = {
 
@@ -337,8 +338,9 @@ appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 };
 
 
-
-/* START FIREBASE */
+/* =========================
+START FIREBASE
+========================= */
 
 const app = initializeApp(firebaseConfig);
 
@@ -347,8 +349,9 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-
-/* AUTO LOGIN */
+/* =========================
+AUTO LOGIN
+========================= */
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -370,8 +373,9 @@ loadDashboard();
 });
 
 
-
-/* LOGIN */
+/* =========================
+LOGIN
+========================= */
 
 window.login = async function(){
 
@@ -395,13 +399,16 @@ alert("Login Successful");
 
 alert(error.message);
 
+console.log(error);
+
 }
 
 };
 
 
-
-/* ADD PRODUCT */
+/* =========================
+ADD NEW PRODUCT
+========================= */
 
 window.addNewProduct = async function(){
 
@@ -430,7 +437,6 @@ return;
 }
 
 
-
 /* DUPLICATE CHECK */
 
 const q = query(
@@ -438,7 +444,8 @@ collection(db,"products"),
 where("name","==",name)
 );
 
-const snapshot = await getDocs(q);
+const snapshot =
+await getDocs(q);
 
 if(!snapshot.empty){
 
@@ -447,7 +454,6 @@ alert("Product Already Exists");
 return;
 
 }
-
 
 
 /* SAVE PRODUCT */
@@ -463,14 +469,23 @@ stock
 
 alert("Product Added");
 
+document.getElementById("newProductName").value = "";
+
+document.getElementById("newBuyPrice").value = "";
+
+document.getElementById("newSellPrice").value = "";
+
+document.getElementById("openingStock").value = "";
+
 loadProducts();
 loadDashboard();
 
 };
 
 
-
-/* PURCHASE */
+/* =========================
+PURCHASE
+========================= */
 
 window.savePurchase = async function(){
 
@@ -500,6 +515,7 @@ const data =
 productSnap.data();
 
 
+/* ADD STOCK */
 
 await updateDoc(productRef,{
 
@@ -508,6 +524,7 @@ stock:Number(data.stock) + qty
 });
 
 
+/* SAVE PURCHASE */
 
 await addDoc(collection(db,"purchases"),{
 
@@ -519,14 +536,17 @@ date:new Date().toLocaleString()
 
 alert("Purchase Saved");
 
+document.getElementById("purchaseQty").value = "";
+
 loadProducts();
 loadDashboard();
 
 };
 
 
-
-/* ORDER ENTRY */
+/* =========================
+ORDER ENTRY
+========================= */
 
 window.saveOrder = async function(){
 
@@ -560,6 +580,7 @@ const data =
 productSnap.data();
 
 
+/* STOCK CHECK */
 
 if(data.stock < qty){
 
@@ -568,7 +589,6 @@ alert("Not Enough Stock");
 return;
 
 }
-
 
 
 /* AUTO STOCK MINUS */
@@ -580,14 +600,12 @@ stock:Number(data.stock) - qty
 });
 
 
-
-/* AUTO PROFIT */
+/* PROFIT */
 
 const profit =
 (Number(data.sellPrice)
 - Number(data.buyPrice))
 * qty;
-
 
 
 /* SAVE ORDER */
@@ -604,6 +622,10 @@ date:new Date().toLocaleString()
 
 alert("Order Saved");
 
+document.getElementById("customerName").value = "";
+
+document.getElementById("orderQty").value = "";
+
 loadProducts();
 loadOrders();
 loadDashboard();
@@ -611,8 +633,9 @@ loadDashboard();
 };
 
 
-
-/* RETURN */
+/* =========================
+RETURN PRODUCT
+========================= */
 
 window.returnProductFunc = async function(){
 
@@ -642,7 +665,6 @@ const data =
 productSnap.data();
 
 
-
 /* STOCK PLUS */
 
 await updateDoc(productRef,{
@@ -652,18 +674,28 @@ stock:Number(data.stock) + qty
 });
 
 
+/* RETURN PROFIT */
 
-/* RETURN SAVE */
+const profit =
+(Number(data.sellPrice)
+- Number(data.buyPrice))
+* qty;
+
+
+/* SAVE RETURN */
 
 await addDoc(collection(db,"returns"),{
 
 product:data.name,
 qty,
+profit,
 date:new Date().toLocaleString()
 
 });
 
 alert("Return Saved");
+
+document.getElementById("returnQty").value = "";
 
 loadProducts();
 loadReturns();
@@ -672,8 +704,9 @@ loadDashboard();
 };
 
 
-
-/* LOAD PRODUCTS */
+/* =========================
+LOAD PRODUCTS
+========================= */
 
 async function loadProducts(){
 
@@ -754,8 +787,9 @@ document.getElementById("returnProduct")
 }
 
 
-
-/* DELETE PRODUCT */
+/* =========================
+DELETE PRODUCT
+========================= */
 
 window.deleteProduct = async function(id){
 
@@ -769,8 +803,9 @@ loadDashboard();
 };
 
 
-
-/* LOAD ORDERS */
+/* =========================
+LOAD ORDERS
+========================= */
 
 async function loadOrders(){
 
@@ -817,8 +852,9 @@ document.getElementById("orderList")
 }
 
 
-
-/* LOAD RETURNS */
+/* =========================
+LOAD RETURNS
+========================= */
 
 async function loadReturns(){
 
@@ -839,7 +875,11 @@ Product: ${data.product}
 
 <br>
 
-Qty: ${data.qty}
+Return Qty: ${data.qty}
+
+<br>
+
+Profit Minus: ${data.profit}
 
 <br>
 
@@ -857,8 +897,10 @@ document.getElementById("returnList")
 }
 
 
-
-/* DASHBOARD */
+/* =========================
+DASHBOARD
+NET SALES = ORDER - RETURN
+========================= */
 
 async function loadDashboard(){
 
@@ -868,13 +910,21 @@ await getDocs(collection(db,"products"));
 const orderSnapshot =
 await getDocs(collection(db,"orders"));
 
+const returnSnapshot =
+await getDocs(collection(db,"returns"));
+
 let totalStock = 0;
 
-let totalSales = 0;
+let totalOrderQty = 0;
 
-let totalProfit = 0;
+let totalReturnQty = 0;
+
+let totalOrderProfit = 0;
+
+let totalReturnProfit = 0;
 
 
+/* STOCK */
 
 productSnapshot.forEach((docSnap)=>{
 
@@ -885,18 +935,42 @@ totalStock += Number(data.stock || 0);
 });
 
 
+/* ORDERS */
 
 orderSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-totalSales += Number(data.qty || 0);
+totalOrderQty += Number(data.qty || 0);
 
-totalProfit += Number(data.profit || 0);
+totalOrderProfit += Number(data.profit || 0);
 
 });
 
 
+/* RETURNS */
+
+returnSnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+totalReturnQty += Number(data.qty || 0);
+
+totalReturnProfit += Number(data.profit || 0);
+
+});
+
+
+/* FINAL */
+
+const finalSales =
+totalOrderQty - totalReturnQty;
+
+const finalProfit =
+totalOrderProfit - totalReturnProfit;
+
+
+/* SHOW */
 
 document.getElementById("totalStock")
 .innerHTML =
@@ -904,17 +978,18 @@ document.getElementById("totalStock")
 
 document.getElementById("totalSales")
 .innerHTML =
-"Total Sales: " + totalSales;
+"Net Sales: " + finalSales;
 
 document.getElementById("totalProfit")
 .innerHTML =
-"Total Profit: " + totalProfit;
+"Net Profit: " + finalProfit;
 
 }
 
 
-
-/* SEARCH */
+/* =========================
+SEARCH PRODUCT
+========================= */
 
 window.searchProduct = function(){
 
@@ -948,4 +1023,4 @@ item.style.display = "none";
 </script>
 
 </body>
-  </html>
+</html>
