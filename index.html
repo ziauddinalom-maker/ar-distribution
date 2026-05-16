@@ -31,6 +31,7 @@ margin-top:8px;
 border-radius:6px;
 border:1px solid #ccc;
 box-sizing:border-box;
+font-size:16px;
 }
 
 button{
@@ -128,7 +129,7 @@ margin-top:0;
 
 </div>
 
-<!-- DAILY REPORT -->
+<!-- DAILY & MONTHLY REPORT -->
 
 <div class="box">
 
@@ -228,32 +229,35 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
 // ================= FIREBASE CONFIG =================
+// এখানে আপনার আসল Firebase Config বসাবেন
+// Firebase Console থেকে copy করবেন
+// ===================================================
 
 const firebaseConfig = {
 
-apiKey: "YOUR_API_KEY",
+apiKey: "PASTE_YOUR_REAL_API_KEY",
 
-authDomain: "YOUR_AUTH_DOMAIN",
+authDomain: "PASTE_YOUR_REAL_AUTH_DOMAIN",
 
-projectId: "YOUR_PROJECT_ID",
+projectId: "PASTE_YOUR_REAL_PROJECT_ID",
 
-storageBucket: "YOUR_STORAGE_BUCKET",
+storageBucket: "PASTE_YOUR_REAL_STORAGE_BUCKET",
 
-messagingSenderId: "YOUR_SENDER_ID",
+messagingSenderId: "PASTE_YOUR_REAL_MESSAGING_SENDER_ID",
 
-appId: "YOUR_APP_ID"
+appId: "PASTE_YOUR_REAL_APP_ID"
 
 };
 
-// ===================================================
+
+
+// FIREBASE START
 
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
 const auth = getAuth(app);
-
-let currentRole = "";
 
 
 
@@ -299,7 +303,7 @@ location.reload();
 
 
 
-// AUTH STATE
+// AUTH CHECK
 
 onAuthStateChanged(auth, async(user)=>{
 
@@ -487,7 +491,7 @@ return;
 const snapshot =
 await getDocs(collection(db,"products"));
 
-snapshot.forEach(async(docSnap)=>{
+for (const docSnap of snapshot.docs){
 
 const data = docSnap.data();
 
@@ -545,7 +549,7 @@ loadSalesReport();
 
 }
 
-});
+}
 
 };
 
@@ -598,7 +602,7 @@ document.getElementById("totalProfit").innerHTML =
 
 
 
-// DAILY MONTHLY REPORT
+// DAILY & MONTHLY REPORT
 
 async function loadReports(){
 
@@ -648,213 +652,4 @@ document.getElementById("dailySales").innerHTML =
 "Daily Sales: " + dailySales;
 
 document.getElementById("dailyProfit").innerHTML =
-"Daily Profit: " + dailyProfit;
-
-document.getElementById("monthlySales").innerHTML =
-"Monthly Sales: " + monthlySales;
-
-document.getElementById("monthlyProfit").innerHTML =
-"Monthly Profit: " + monthlyProfit;
-
-}
-
-
-
-// SALES REPORT
-
-async function loadSalesReport(){
-
-const snapshot =
-await getDocs(collection(db,"sales"));
-
-let totalSales = 0;
-
-let totalAmount = 0;
-
-let html = "";
-
-snapshot.forEach((d)=>{
-
-const data = d.data();
-
-totalSales++;
-
-totalAmount += Number(data.total || 0);
-
-html += `
-<div class="item">
-
-<b>${data.product}</b>
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Amount: ${data.total}
-
-<br>
-
-Profit: ${data.profit}
-
-</div>
-`;
-
-});
-
-document.getElementById("salesCount").innerHTML =
-"Total Sales Orders: " + totalSales;
-
-document.getElementById("salesAmount").innerHTML =
-"Total Sales Amount: " + totalAmount;
-
-document.getElementById("salesReportList").innerHTML =
-html;
-
-}
-
-
-
-// ORDER REPORT
-
-async function loadOrderReport(){
-
-const snapshot =
-await getDocs(collection(db,"orders"));
-
-let totalOrders = 0;
-
-let html = "";
-
-snapshot.forEach((d)=>{
-
-const data = d.data();
-
-totalOrders++;
-
-html += `
-<div class="item">
-
-Customer:
-${data.customer || "Customer"}
-
-<br>
-
-Product:
-${data.product || ""}
-
-<br>
-
-Qty:
-${data.qty || 0}
-
-</div>
-`;
-
-});
-
-document.getElementById("orderCount").innerHTML =
-"Total Orders: " + totalOrders;
-
-document.getElementById("orderReportList").innerHTML =
-html;
-
-}
-
-
-
-// RETURN REPORT
-
-async function loadReturnReport(){
-
-const snapshot =
-await getDocs(collection(db,"returns"));
-
-let totalReturns = 0;
-
-let html = "";
-
-snapshot.forEach((d)=>{
-
-const data = d.data();
-
-totalReturns++;
-
-html += `
-<div class="item">
-
-Product:
-${data.product || ""}
-
-<br>
-
-Qty:
-${data.qty || 0}
-
-<br>
-
-Reason:
-${data.reason || ""}
-
-</div>
-`;
-
-});
-
-document.getElementById("returnCount").innerHTML =
-"Total Returns: " + totalReturns;
-
-document.getElementById("returnReportList").innerHTML =
-html;
-
-}
-
-
-
-// SEARCH
-
-window.searchProduct = function(){
-
-const input =
-document.getElementById("searchInput")
-.value
-.toLowerCase();
-
-const items =
-document.querySelectorAll(".item");
-
-items.forEach((item)=>{
-
-if(
-item.innerText.toLowerCase()
-.includes(input)
-){
-
-item.style.display = "block";
-
-}else{
-
-item.style.display = "none";
-
-}
-
-});
-
-};
-
-
-
-// PDF
-
-window.downloadPDF = function(){
-
-window.print();
-
-};
-
-</script>
-
-</body>
-
-</html>
+"
