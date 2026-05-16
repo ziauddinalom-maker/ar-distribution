@@ -88,7 +88,7 @@ id="password"
 placeholder="Password"
 >
 
-<button onclick="login()">
+<button id="loginBtn">
 Login
 </button>
 
@@ -408,15 +408,10 @@ document.getElementById("dashboard").style.display =
 "block";
 
 loadProducts();
-
 loadSales();
-
 loadOrders();
-
 loadReturns();
-
 loadDashboard();
-
 loadReports();
 
 }
@@ -452,15 +447,10 @@ document.getElementById("dashboard").style.display =
 "block";
 
 loadProducts();
-
 loadSales();
-
 loadOrders();
-
 loadReturns();
-
 loadDashboard();
-
 loadReports();
 
 }catch(error){
@@ -473,7 +463,9 @@ console.log(error);
 
 }
 
-window.login = login;
+document
+.getElementById("loginBtn")
+.addEventListener("click", login);
 
 
 
@@ -505,7 +497,6 @@ stock: qty
 alert("Purchase Saved");
 
 loadProducts();
-
 loadDashboard();
 
 };
@@ -540,7 +531,6 @@ stock: productData.stock + qty
 alert("Stock Added");
 
 loadProducts();
-
 loadDashboard();
 
 };
@@ -635,11 +625,8 @@ date:new Date().toLocaleString()
 alert("Sale Saved");
 
 loadProducts();
-
 loadSales();
-
 loadDashboard();
-
 loadReports();
 
 };
@@ -682,9 +669,7 @@ date:new Date().toLocaleString()
 alert("Return Saved");
 
 loadProducts();
-
 loadReturns();
-
 loadDashboard();
 
 };
@@ -774,7 +759,6 @@ window.deleteProduct = async function(id){
 await deleteDoc(doc(db,"products",id));
 
 loadProducts();
-
 loadDashboard();
 
 };
@@ -1060,4 +1044,4 @@ window.print();
 </script>
 
 </body>
-  </html>
+</html>
