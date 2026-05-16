@@ -52,7 +52,6 @@ opacity:0.9;
 
 .deleteBtn{
 background:red;
-margin-top:10px;
 }
 
 .item{
@@ -225,7 +224,7 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- MAIN DASHBOARD -->
 
 <div class="box">
 
@@ -245,7 +244,7 @@ Net Profit: 0
 
 </div>
 
-<!-- REPORT -->
+<!-- DAILY MONTHLY REPORT -->
 
 <div class="box">
 
@@ -338,10 +337,6 @@ onkeyup="searchProduct()"
 
 <script type="module">
 
-/* =========================
-FIREBASE IMPORT
-========================= */
-
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -366,10 +361,7 @@ onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-/* =========================
-FIREBASE CONFIG
-========================= */
+/* FIREBASE */
 
 const firebaseConfig = {
 
@@ -387,21 +379,13 @@ appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
 
-
-/* =========================
-START FIREBASE
-========================= */
-
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
 const auth = getAuth(app);
 
-
-/* =========================
-AUTO LOGIN
-========================= */
+/* AUTO LOGIN */
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -424,10 +408,7 @@ loadReports();
 
 });
 
-
-/* =========================
-LOGIN
-========================= */
+/* LOGIN */
 
 window.login = async function(){
 
@@ -451,16 +432,11 @@ alert("Login Successful");
 
 alert(error.message);
 
-console.log(error);
-
 }
 
 };
 
-
-/* =========================
-ADD PRODUCT
-========================= */
+/* ADD PRODUCT */
 
 window.addNewProduct = async function(){
 
@@ -515,21 +491,13 @@ stock
 
 alert("Product Added");
 
-document.getElementById("newProductName").value = "";
-document.getElementById("newBuyPrice").value = "";
-document.getElementById("newSellPrice").value = "";
-document.getElementById("openingStock").value = "";
-
 loadProducts();
 loadDashboard();
 loadReports();
 
 };
 
-
-/* =========================
-PURCHASE
-========================= */
+/* PURCHASE */
 
 window.savePurchase = async function(){
 
@@ -540,14 +508,6 @@ document.getElementById("purchaseProduct")
 const qty =
 Number(document.getElementById("purchaseQty")
 .value);
-
-if(!productId){
-
-alert("Select Product");
-
-return;
-
-}
 
 const productRef =
 doc(db,"products",productId);
@@ -567,15 +527,13 @@ stock:Number(data.stock) + qty
 await addDoc(collection(db,"purchases"),{
 
 product:data.name,
-productId: productId,
+productId,
 qty,
 date:new Date().toLocaleString()
 
 });
 
 alert("Purchase Saved");
-
-document.getElementById("purchaseQty").value = "";
 
 loadProducts();
 loadPurchases();
@@ -584,10 +542,7 @@ loadReports();
 
 };
 
-
-/* =========================
-ORDER ENTRY
-========================= */
+/* ORDER */
 
 window.saveOrder = async function(){
 
@@ -602,14 +557,6 @@ document.getElementById("orderProduct")
 const qty =
 Number(document.getElementById("orderQty")
 .value);
-
-if(!productId){
-
-alert("Select Product");
-
-return;
-
-}
 
 const productRef =
 doc(db,"products",productId);
@@ -643,7 +590,7 @@ await addDoc(collection(db,"orders"),{
 
 customer,
 product:data.name,
-productId: productId,
+productId,
 qty,
 profit,
 date:new Date().toLocaleString()
@@ -652,9 +599,6 @@ date:new Date().toLocaleString()
 
 alert("Order Saved");
 
-document.getElementById("customerName").value = "";
-document.getElementById("orderQty").value = "";
-
 loadProducts();
 loadOrders();
 loadDashboard();
@@ -662,10 +606,7 @@ loadReports();
 
 };
 
-
-/* =========================
-RETURN
-========================= */
+/* RETURN */
 
 window.returnProductFunc = async function(){
 
@@ -676,14 +617,6 @@ document.getElementById("returnProduct")
 const qty =
 Number(document.getElementById("returnQty")
 .value);
-
-if(!productId){
-
-alert("Select Product");
-
-return;
-
-}
 
 const productRef =
 doc(db,"products",productId);
@@ -716,8 +649,6 @@ date:new Date().toLocaleString()
 
 alert("Return Saved");
 
-document.getElementById("returnQty").value = "";
-
 loadProducts();
 loadReturns();
 loadDashboard();
@@ -725,10 +656,7 @@ loadReports();
 
 };
 
-
-/* =========================
-LOAD PRODUCTS
-========================= */
+/* LOAD PRODUCTS */
 
 async function loadProducts(){
 
@@ -762,13 +690,6 @@ Sell Price: ${data.sellPrice}
 
 Stock: ${data.stock}
 
-<br>
-
-${data.stock <= 5
-? '<span class="lowStock">⚠️ Low Stock</span>'
-: ''
-}
-
 <br><br>
 
 <button
@@ -785,11 +706,9 @@ Delete Product
 `;
 
 options += `
-
 <option value="${docSnap.id}">
 ${data.name}
 </option>
-
 `;
 
 });
@@ -808,10 +727,7 @@ document.getElementById("returnProduct")
 
 }
 
-
-/* =========================
-DELETE PRODUCT
-========================= */
+/* DELETE PRODUCT */
 
 window.deleteProduct = async function(id){
 
@@ -820,171 +736,10 @@ await deleteDoc(doc(db,"products",id));
 alert("Product Deleted");
 
 loadProducts();
-loadDashboard();
-loadReports();
 
 };
 
-
-/* =========================
-DELETE PURCHASE
-========================= */
-
-window.deletePurchase = async function(
-purchaseId,
-productId,
-qty,
-dataProduct
-){
-
-const confirmDelete =
-confirm("Delete this purchase?");
-
-if(!confirmDelete){
-
-return;
-
-}
-
-try{
-
-let productRef = null;
-
-if(productId){
-
-productRef =
-doc(db,"products",productId);
-
-}else{
-
-const q = query(
-collection(db,"products"),
-where("name","==",dataProduct)
-);
-
-const snapshot =
-await getDocs(q);
-
-if(!snapshot.empty){
-
-productRef =
-doc(db,"products",snapshot.docs[0].id);
-
-}
-
-}
-
-if(productRef){
-
-const productSnap =
-await getDoc(productRef);
-
-if(productSnap.exists()){
-
-const currentStock =
-Number(productSnap.data().stock || 0);
-
-await updateDoc(productRef,{
-
-stock: currentStock - Number(qty)
-
-});
-
-}
-
-}
-
-await deleteDoc(
-doc(db,"purchases",purchaseId)
-);
-
-alert("Purchase Deleted");
-
-loadProducts();
-loadPurchases();
-loadDashboard();
-loadReports();
-
-}catch(error){
-
-console.log(error);
-
-alert("Delete Failed");
-
-}
-
-};
-
-
-/* =========================
-DELETE ORDER
-========================= */
-
-window.deleteOrder = async function(
-orderId,
-productId,
-qty
-){
-
-const confirmDelete =
-confirm("Delete this order?");
-
-if(!confirmDelete){
-
-return;
-
-}
-
-try{
-
-if(productId){
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-if(productSnap.exists()){
-
-const currentStock =
-Number(productSnap.data().stock || 0);
-
-await updateDoc(productRef,{
-
-stock: currentStock + Number(qty)
-
-});
-
-}
-
-}
-
-await deleteDoc(
-doc(db,"orders",orderId)
-);
-
-alert("Order Deleted");
-
-loadProducts();
-loadOrders();
-loadDashboard();
-loadReports();
-
-}catch(error){
-
-console.log(error);
-
-alert("Delete Failed");
-
-}
-
-};
-
-
-/* =========================
-LOAD PURCHASES
-========================= */
+/* LOAD PURCHASES */
 
 async function loadPurchases(){
 
@@ -1038,10 +793,102 @@ document.getElementById("purchaseList")
 
 }
 
+/* DELETE PURCHASE */
 
-/* =========================
-LOAD ORDERS
-========================= */
+window.deletePurchase = async function(
+purchaseId,
+productId,
+qty,
+dataProduct
+){
+
+const confirmDelete =
+confirm("Delete this purchase?");
+
+if(!confirmDelete){
+
+return;
+
+}
+
+try{
+
+let productRef = null;
+
+if(productId){
+
+productRef =
+doc(db,"products",productId);
+
+}else{
+
+const productSnapshot =
+await getDocs(collection(db,"products"));
+
+productSnapshot.forEach((docSnap)=>{
+
+const pdata = docSnap.data();
+
+if(
+pdata.name.trim().toLowerCase()
+===
+dataProduct.trim().toLowerCase()
+){
+
+productRef =
+doc(db,"products",docSnap.id);
+
+}
+
+});
+
+}
+
+if(productRef){
+
+const productSnap =
+await getDoc(productRef);
+
+if(productSnap.exists()){
+
+const currentStock =
+Number(productSnap.data().stock || 0);
+
+const newStock =
+currentStock - Number(qty);
+
+await updateDoc(productRef,{
+
+stock: newStock < 0 ? 0 : newStock
+
+});
+
+}
+
+}
+
+await deleteDoc(
+doc(db,"purchases",purchaseId)
+);
+
+alert("Purchase Deleted");
+
+loadProducts();
+loadPurchases();
+loadDashboard();
+loadReports();
+
+}catch(error){
+
+console.log(error);
+
+alert(error.message);
+
+}
+
+};
+
+/* LOAD ORDERS */
 
 async function loadOrders(){
 
@@ -1076,21 +923,6 @@ Profit: ${data.profit}
 
 Date: ${data.date}
 
-<br><br>
-
-<button
-class="deleteBtn"
-onclick="deleteOrder(
-'${docSnap.id}',
-'${data.productId || ""}',
-${data.qty}
-)"
->
-
-Delete Order
-
-</button>
-
 </div>
 
 `;
@@ -1102,10 +934,7 @@ document.getElementById("orderList")
 
 }
 
-
-/* =========================
-LOAD RETURNS
-========================= */
+/* LOAD RETURNS */
 
 async function loadReturns(){
 
@@ -1147,27 +976,14 @@ document.getElementById("returnList")
 
 }
 
-
-/* =========================
-MAIN DASHBOARD
-========================= */
+/* DASHBOARD */
 
 async function loadDashboard(){
 
 const productSnapshot =
 await getDocs(collection(db,"products"));
 
-const orderSnapshot =
-await getDocs(collection(db,"orders"));
-
-const returnSnapshot =
-await getDocs(collection(db,"returns"));
-
 let totalStock = 0;
-let totalOrderQty = 0;
-let totalReturnQty = 0;
-let totalOrderProfit = 0;
-let totalReturnProfit = 0;
 
 productSnapshot.forEach((docSnap)=>{
 
@@ -1177,214 +993,23 @@ totalStock += Number(data.stock || 0);
 
 });
 
-orderSnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-totalOrderQty += Number(data.qty || 0);
-
-totalOrderProfit += Number(data.profit || 0);
-
-});
-
-returnSnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-totalReturnQty += Number(data.qty || 0);
-
-totalReturnProfit += Number(data.profit || 0);
-
-});
-
-const finalSales =
-totalOrderQty - totalReturnQty;
-
-const finalProfit =
-totalOrderProfit - totalReturnProfit;
-
 document.getElementById("totalStock")
 .innerHTML =
 "Total Stock: " + totalStock;
 
-document.getElementById("totalSales")
-.innerHTML =
-"Net Sales: " + finalSales;
-
-document.getElementById("totalProfit")
-.innerHTML =
-"Net Profit: " + finalProfit;
-
 }
 
-
-/* =========================
-DAILY & MONTHLY REPORT
-========================= */
+/* REPORT */
 
 async function loadReports(){
 
-const purchaseSnapshot =
-await getDocs(collection(db,"purchases"));
-
-const orderSnapshot =
-await getDocs(collection(db,"orders"));
-
-const returnSnapshot =
-await getDocs(collection(db,"returns"));
-
-let todayPurchase = 0;
-let todaySales = 0;
-let todayReturns = 0;
-let todayProfit = 0;
-let todayReturnProfit = 0;
-
-let monthlyPurchase = 0;
-let monthlySales = 0;
-let monthlyReturns = 0;
-let monthlyProfit = 0;
-let monthlyReturnProfit = 0;
-
-const today =
-new Date().toLocaleDateString();
-
-const currentMonth =
-new Date().getMonth();
-
-const currentYear =
-new Date().getFullYear();
-
-purchaseSnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-const itemDate =
-new Date(data.date);
-
-if(
-itemDate.toLocaleDateString() === today
-){
-
-todayPurchase += Number(data.qty || 0);
-
-}
-
-if(
-itemDate.getMonth() === currentMonth
-&&
-itemDate.getFullYear() === currentYear
-){
-
-monthlyPurchase += Number(data.qty || 0);
-
-}
-
-});
-
-orderSnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-const itemDate =
-new Date(data.date);
-
-if(
-itemDate.toLocaleDateString() === today
-){
-
-todaySales += Number(data.qty || 0);
-
-todayProfit += Number(data.profit || 0);
-
-}
-
-if(
-itemDate.getMonth() === currentMonth
-&&
-itemDate.getFullYear() === currentYear
-){
-
-monthlySales += Number(data.qty || 0);
-
-monthlyProfit += Number(data.profit || 0);
-
-}
-
-});
-
-returnSnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-const itemDate =
-new Date(data.date);
-
-if(
-itemDate.toLocaleDateString() === today
-){
-
-todayReturns += Number(data.qty || 0);
-
-todayReturnProfit += Number(data.profit || 0);
-
-}
-
-if(
-itemDate.getMonth() === currentMonth
-&&
-itemDate.getFullYear() === currentYear
-){
-
-monthlyReturns += Number(data.qty || 0);
-
-monthlyReturnProfit += Number(data.profit || 0);
-
-}
-
-});
-
-const finalTodaySales =
-todaySales - todayReturns;
-
-const finalTodayProfit =
-todayProfit - todayReturnProfit;
-
-const finalMonthlySales =
-monthlySales - monthlyReturns;
-
-const finalMonthlyProfit =
-monthlyProfit - monthlyReturnProfit;
-
 document.getElementById("todayPurchase")
 .innerHTML =
-"Today Purchase: " + todayPurchase;
-
-document.getElementById("todaySales")
-.innerHTML =
-"Today Net Sales: " + finalTodaySales;
-
-document.getElementById("todayProfit")
-.innerHTML =
-"Today Net Profit: " + finalTodayProfit;
-
-document.getElementById("monthlyPurchase")
-.innerHTML =
-"Monthly Purchase: " + monthlyPurchase;
-
-document.getElementById("monthlySales")
-.innerHTML =
-"Monthly Net Sales: " + finalMonthlySales;
-
-document.getElementById("monthlyProfit")
-.innerHTML =
-"Monthly Net Profit: " + finalMonthlyProfit;
+"Today Purchase Ready";
 
 }
 
-
-/* =========================
-SEARCH PRODUCT
-========================= */
+/* SEARCH */
 
 window.searchProduct = function(){
 
