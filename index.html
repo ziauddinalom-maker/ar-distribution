@@ -67,18 +67,10 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.sidebar button:hover{
-opacity:0.9;
-}
-
-/* MAIN CONTENT */
-
 .mainContent{
 margin-left:240px;
 padding:20px;
 }
-
-/* BOX */
 
 .box{
 background:white;
@@ -88,8 +80,6 @@ margin-bottom:20px;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-/* INPUT */
-
 input,select{
 width:100%;
 padding:12px;
@@ -98,8 +88,6 @@ font-size:16px;
 border-radius:6px;
 border:1px solid #ccc;
 }
-
-/* BUTTON */
 
 .actionBtn{
 width:100%;
@@ -117,8 +105,6 @@ cursor:pointer;
 background:red;
 }
 
-/* ITEM */
-
 .item{
 background:#fafafa;
 padding:10px;
@@ -126,8 +112,6 @@ border-radius:8px;
 margin-top:10px;
 border:1px solid #ddd;
 }
-
-/* PAGE */
 
 .page{
 display:none;
@@ -141,8 +125,6 @@ display:block;
 color:red;
 font-weight:bold;
 }
-
-/* MOBILE */
 
 @media(max-width:768px){
 
@@ -222,7 +204,7 @@ Reports
 
 <div class="mainContent">
 
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 
 <div id="dashboardPage" class="page activePage">
 
@@ -240,7 +222,7 @@ Total Stock: 0
 
 </div>
 
-<!-- PRODUCT PAGE -->
+<!-- PRODUCTS -->
 
 <div id="productPage" class="page">
 
@@ -248,27 +230,16 @@ Total Stock: 0
 
 <h2>Add Product</h2>
 
-<input type="text"
-id="newProductName"
-placeholder="Product Name">
+<input type="text" id="newProductName" placeholder="Product Name">
 
-<input type="number"
-id="newBuyPrice"
-placeholder="Buy Price">
+<input type="number" id="newBuyPrice" placeholder="Buy Price">
 
-<input type="number"
-id="newSellPrice"
-placeholder="Sell Price">
+<input type="number" id="newSellPrice" placeholder="Sell Price">
 
-<input type="number"
-id="openingStock"
-placeholder="Opening Stock">
+<input type="number" id="openingStock" placeholder="Opening Stock">
 
-<button class="actionBtn"
-onclick="addNewProduct()">
-
+<button class="actionBtn" onclick="addNewProduct()">
 Add Product
-
 </button>
 
 </div>
@@ -283,7 +254,7 @@ Add Product
 
 </div>
 
-<!-- PURCHASE PAGE -->
+<!-- PURCHASE -->
 
 <div id="purchasePage" class="page">
 
@@ -292,20 +263,13 @@ Add Product
 <h2>Purchase Entry</h2>
 
 <select id="purchaseProduct">
-<option value="">
-Select Product
-</option>
+<option value="">Select Product</option>
 </select>
 
-<input type="number"
-id="purchaseQty"
-placeholder="Purchase Quantity">
+<input type="number" id="purchaseQty" placeholder="Purchase Quantity">
 
-<button class="actionBtn"
-onclick="savePurchase()">
-
+<button class="actionBtn" onclick="savePurchase()">
 Add Stock
-
 </button>
 
 </div>
@@ -320,7 +284,7 @@ Add Stock
 
 </div>
 
-<!-- SALES PAGE -->
+<!-- SALES -->
 
 <div id="salesPage" class="page">
 
@@ -328,25 +292,16 @@ Add Stock
 
 <h2>Sales Entry</h2>
 
-<input type="text"
-id="customerName"
-placeholder="Customer Name">
+<input type="text" id="customerName" placeholder="Customer Name">
 
 <select id="orderProduct">
-<option value="">
-Select Product
-</option>
+<option value="">Select Product</option>
 </select>
 
-<input type="number"
-id="orderQty"
-placeholder="Order Quantity">
+<input type="number" id="orderQty" placeholder="Order Quantity">
 
-<button class="actionBtn"
-onclick="saveOrder()">
-
+<button class="actionBtn" onclick="saveOrder()">
 Save Sale
-
 </button>
 
 </div>
@@ -361,7 +316,7 @@ Save Sale
 
 </div>
 
-<!-- RETURN PAGE -->
+<!-- RETURNS -->
 
 <div id="returnPage" class="page">
 
@@ -370,20 +325,13 @@ Save Sale
 <h2>Return Product</h2>
 
 <select id="returnProduct">
-<option value="">
-Select Product
-</option>
+<option value="">Select Product</option>
 </select>
 
-<input type="number"
-id="returnQty"
-placeholder="Return Quantity">
+<input type="number" id="returnQty" placeholder="Return Quantity">
 
-<button class="actionBtn"
-onclick="returnProductFunc()">
-
+<button class="actionBtn" onclick="returnProductFunc()">
 Return Product
-
 </button>
 
 </div>
@@ -398,7 +346,7 @@ Return Product
 
 </div>
 
-<!-- REPORT PAGE -->
+<!-- REPORT -->
 
 <div id="reportPage" class="page">
 
@@ -446,21 +394,21 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-apiKey: "YOUR_API_KEY",
+apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
 
-authDomain: "YOUR_AUTH_DOMAIN",
+authDomain: "ar-distribution-ca285.firebaseapp.com",
 
-projectId: "YOUR_PROJECT_ID",
+projectId: "ar-distribution-ca285",
 
-storageBucket: "YOUR_STORAGE_BUCKET",
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
 
-messagingSenderId: "YOUR_SENDER_ID",
+messagingSenderId: "668942550210",
 
-appId: "YOUR_APP_ID"
+appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
 
-/* FIREBASE START */
+/* FIREBASE */
 
 const app = initializeApp(firebaseConfig);
 
@@ -468,7 +416,7 @@ const db = getFirestore(app);
 
 const auth = getAuth(app);
 
-/* PAGE SWITCH */
+/* PAGE */
 
 window.showPage = function(pageId){
 
@@ -476,9 +424,7 @@ const pages =
 document.querySelectorAll('.page');
 
 pages.forEach((page)=>{
-
 page.classList.remove('activePage');
-
 });
 
 document.getElementById(pageId)
@@ -539,11 +485,7 @@ alert(error.message);
 
 /* STOCK HISTORY */
 
-async function addStockHistory(
-type,
-product,
-qty
-){
+async function addStockHistory(type,product,qty){
 
 await addDoc(
 collection(db,"stockHistory"),
@@ -576,7 +518,6 @@ Number(document.getElementById("openingStock").value);
 if(!name){
 
 alert("Enter Product Name");
-
 return;
 
 }
@@ -592,7 +533,6 @@ await getDocs(q);
 if(!snapshot.empty){
 
 alert("Product Already Exists");
-
 return;
 
 }
@@ -631,7 +571,6 @@ Number(document.getElementById("purchaseQty").value);
 if(!productId || qty <= 0){
 
 alert("Enter Correct Data");
-
 return;
 
 }
@@ -687,7 +626,6 @@ Number(document.getElementById("orderQty").value);
 if(!customer || !productId || qty <= 0){
 
 alert("Enter Correct Data");
-
 return;
 
 }
@@ -704,7 +642,6 @@ productSnap.data();
 if(data.stock < qty){
 
 alert("Not Enough Stock");
-
 return;
 
 }
@@ -749,7 +686,6 @@ Number(document.getElementById("returnQty").value);
 if(!productId || qty <= 0){
 
 alert("Enter Correct Data");
-
 return;
 
 }
@@ -872,9 +808,7 @@ const ok =
 confirm("Delete Product?");
 
 if(!ok){
-
 return;
-
 }
 
 await deleteDoc(doc(db,"products",id));
@@ -1005,9 +939,7 @@ const ok =
 confirm("Delete Order?");
 
 if(!ok){
-
 return;
-
 }
 
 try{
