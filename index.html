@@ -248,7 +248,7 @@ Total Profit: 0
 
 </div>
 
-<!-- DAILY REPORT -->
+<!-- REPORT -->
 
 <div class="box">
 
@@ -385,7 +385,7 @@ appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 
 
-// FIREBASE START
+// START FIREBASE
 
 const app = initializeApp(firebaseConfig);
 
@@ -425,9 +425,9 @@ loadReports();
 
 
 
-// LOGIN
+// LOGIN FUNCTION
 
-window.login = async function(){
+async function login(){
 
 const email =
 document.getElementById("email").value;
@@ -445,13 +445,35 @@ password
 
 alert("Login Successful");
 
+document.getElementById("loginPage").style.display =
+"none";
+
+document.getElementById("dashboard").style.display =
+"block";
+
+loadProducts();
+
+loadSales();
+
+loadOrders();
+
+loadReturns();
+
+loadDashboard();
+
+loadReports();
+
 }catch(error){
 
 alert(error.message);
 
+console.log(error);
+
 }
 
-};
+}
+
+window.login = login;
 
 
 
@@ -797,7 +819,7 @@ Date: ${data.date}
 document.getElementById("salesList").innerHTML =
 html;
 
-}
+};
 
 
 
@@ -839,7 +861,7 @@ Date: ${data.date}
 document.getElementById("orderList").innerHTML =
 html;
 
-}
+};
 
 
 
@@ -877,7 +899,7 @@ Date: ${data.date}
 document.getElementById("returnList").innerHTML =
 html;
 
-}
+};
 
 
 
@@ -897,17 +919,17 @@ let totalSales = 0;
 
 let totalProfit = 0;
 
-productSnapshot.forEach((doc)=>{
+productSnapshot.forEach((docSnap)=>{
 
-const data = doc.data();
+const data = docSnap.data();
 
 totalProducts += data.stock || 0;
 
 });
 
-salesSnapshot.forEach((doc)=>{
+salesSnapshot.forEach((docSnap)=>{
 
-const data = doc.data();
+const data = docSnap.data();
 
 totalSales += data.qty || 0;
 
@@ -924,11 +946,11 @@ document.getElementById("totalSales").innerHTML =
 document.getElementById("totalProfit").innerHTML =
 "Total Profit: " + totalProfit;
 
-}
+};
 
 
 
-// DAILY MONTHLY REPORT
+// DAILY & MONTHLY REPORT
 
 async function loadReports(){
 
@@ -990,7 +1012,7 @@ document.getElementById("monthlySales").innerHTML =
 document.getElementById("monthlyProfit").innerHTML =
 "Monthly Profit: " + monthlyProfit;
 
-}
+};
 
 
 
