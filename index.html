@@ -1,106 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AR Distribution</title>
+<!-- SIDEBAR -->
 
 <style>
 
-body{
-font-family:Arial;
-background:#f5f5f5;
-margin:0;
-padding:15px;
-}
-
-.box{
-background:white;
-padding:20px;
-border-radius:10px;
-max-width:700px;
-margin:auto;
-margin-top:20px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-
-input,select,button{
-width:100%;
-padding:12px;
-margin-top:10px;
-font-size:16px;
-border-radius:6px;
-border:1px solid #ccc;
-box-sizing:border-box;
-}
-
-button{
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:220px;
+height:100%;
 background:#0d6efd;
+padding-top:20px;
+overflow:auto;
+}
+
+.sidebar h2{
 color:white;
+text-align:center;
+margin-bottom:20px;
+}
+
+.sidebar button{
+width:90%;
+margin:10px auto;
+display:block;
+background:white;
+color:#0d6efd;
+font-weight:bold;
 border:none;
+padding:12px;
+border-radius:8px;
 cursor:pointer;
 }
 
-button:hover{
-opacity:0.9;
+.sidebar button:hover{
+background:#e9ecef;
 }
 
-.deleteBtn{
-background:red;
-margin-top:10px;
-}
-
-.item{
-background:#fafafa;
+.mainContent{
+margin-left:240px;
 padding:10px;
-border-radius:8px;
-margin-top:10px;
-border:1px solid #ddd;
 }
 
-.lowStock{
-color:red;
-font-weight:bold;
-}
-
-#dashboard{
+.page{
 display:none;
 }
 
-hr{
-margin-top:20px;
-margin-bottom:20px;
+.activePage{
+display:block;
+}
+
+@media(max-width:768px){
+
+.sidebar{
+width:100%;
+height:auto;
+position:relative;
+}
+
+.mainContent{
+margin-left:0;
+}
+
 }
 
 </style>
 
-</head>
+<!-- SIDEBAR MENU -->
 
-<body>
+<div class="sidebar">
 
-<!-- LOGIN -->
+<h2>AR Distribution</h2>
 
-<div class="box" id="loginPage">
+<button onclick="showPage('dashboardPage')">
+Dashboard
+</button>
 
-<h2>Admin Login</h2>
+<button onclick="showPage('productPage')">
+Products
+</button>
 
-<input type="email" id="email" placeholder="Email">
+<button onclick="showPage('purchasePage')">
+Purchase
+</button>
 
-<input type="password" id="password" placeholder="Password">
+<button onclick="showPage('salesPage')">
+Sales
+</button>
 
-<button onclick="login()">Login</button>
+<button onclick="showPage('returnPage')">
+Returns
+</button>
+
+<button onclick="showPage('reportPage')">
+Reports
+</button>
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- MAIN CONTENT -->
 
-<div id="dashboard">
+<div class="mainContent">
 
-<!-- ADD PRODUCT -->
+<!-- DASHBOARD PAGE -->
+
+<div id="dashboardPage" class="page activePage">
+
+<div class="box">
+
+<h2>Dashboard</h2>
+
+<p id="totalStock">Total Stock: 0</p>
+
+</div>
+
+</div>
+
+<!-- PRODUCT PAGE -->
+
+<div id="productPage" class="page">
 
 <div class="box">
 
@@ -114,71 +131,11 @@ margin-bottom:20px;
 
 <input type="number" id="openingStock" placeholder="Opening Stock">
 
-<button onclick="addNewProduct()">Add Product</button>
+<button onclick="addNewProduct()">
+Add Product
+</button>
 
 </div>
-
-<!-- PURCHASE -->
-
-<div class="box">
-
-<h2>Purchase Entry</h2>
-
-<select id="purchaseProduct">
-<option value="">Select Product</option>
-</select>
-
-<input type="number" id="purchaseQty" placeholder="Purchase Quantity">
-
-<button onclick="savePurchase()">Add Stock</button>
-
-</div>
-
-<!-- ORDER -->
-
-<div class="box">
-
-<h2>Order Entry</h2>
-
-<input type="text" id="customerName" placeholder="Customer Name">
-
-<select id="orderProduct">
-<option value="">Select Product</option>
-</select>
-
-<input type="number" id="orderQty" placeholder="Order Quantity">
-
-<button onclick="saveOrder()">Save Order</button>
-
-</div>
-
-<!-- RETURN -->
-
-<div class="box">
-
-<h2>Return Product</h2>
-
-<select id="returnProduct">
-<option value="">Select Product</option>
-</select>
-
-<input type="number" id="returnQty" placeholder="Return Quantity">
-
-<button onclick="returnProductFunc()">Return Product</button>
-
-</div>
-
-<!-- DASHBOARD -->
-
-<div class="box">
-
-<h2>Dashboard</h2>
-
-<p id="totalStock">Total Stock: 0</p>
-
-</div>
-
-<!-- PRODUCT LIST -->
 
 <div class="box">
 
@@ -188,7 +145,28 @@ margin-bottom:20px;
 
 </div>
 
-<!-- PURCHASE HISTORY -->
+</div>
+
+<!-- PURCHASE PAGE -->
+
+<div id="purchasePage" class="page">
+
+<div class="box">
+
+<h2>Purchase Entry</h2>
+
+<select id="purchaseProduct">
+<option value="">Select Product</option>
+</select>
+
+<input type="number" id="purchaseQty"
+placeholder="Purchase Quantity">
+
+<button onclick="savePurchase()">
+Add Stock
+</button>
+
+</div>
 
 <div class="box">
 
@@ -198,7 +176,31 @@ margin-bottom:20px;
 
 </div>
 
-<!-- ORDER HISTORY -->
+</div>
+
+<!-- SALES PAGE -->
+
+<div id="salesPage" class="page">
+
+<div class="box">
+
+<h2>Order Entry</h2>
+
+<input type="text" id="customerName"
+placeholder="Customer Name">
+
+<select id="orderProduct">
+<option value="">Select Product</option>
+</select>
+
+<input type="number" id="orderQty"
+placeholder="Order Quantity">
+
+<button onclick="saveOrder()">
+Save Order
+</button>
+
+</div>
 
 <div class="box">
 
@@ -208,7 +210,28 @@ margin-bottom:20px;
 
 </div>
 
-<!-- RETURN HISTORY -->
+</div>
+
+<!-- RETURN PAGE -->
+
+<div id="returnPage" class="page">
+
+<div class="box">
+
+<h2>Return Product</h2>
+
+<select id="returnProduct">
+<option value="">Select Product</option>
+</select>
+
+<input type="number" id="returnQty"
+placeholder="Return Quantity">
+
+<button onclick="returnProductFunc()">
+Return Product
+</button>
+
+</div>
 
 <div class="box">
 
@@ -218,7 +241,11 @@ margin-bottom:20px;
 
 </div>
 
-<!-- STOCK HISTORY -->
+</div>
+
+<!-- REPORT PAGE -->
+
+<div id="reportPage" class="page">
 
 <div class="box">
 
@@ -230,703 +257,24 @@ margin-bottom:20px;
 
 </div>
 
-<script type="module">
-
-/* FIREBASE IMPORT */
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-doc,
-updateDoc,
-getDoc,
-deleteDoc,
-query,
-where
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-getAuth,
-signInWithEmailAndPassword,
-onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-/* FIREBASE CONFIG */
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
-
-authDomain: "ar-distribution-ca285.firebaseapp.com",
-
-projectId: "ar-distribution-ca285",
-
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
-
-messagingSenderId: "668942550210",
-
-appId: "1:668942550210:web:4b1bccf00766a3c274275b"
-
-};
-
-/* START FIREBASE */
-
-const app = initializeApp(firebaseConfig);
-
-const db = getFirestore(app);
-
-const auth = getAuth(app);
-
-/* AUTO LOGIN */
-
-onAuthStateChanged(auth,(user)=>{
-
-if(user){
-
-document.getElementById("loginPage")
-.style.display = "none";
-
-document.getElementById("dashboard")
-.style.display = "block";
-
-loadProducts();
-loadPurchases();
-loadOrders();
-loadReturns();
-loadStockHistory();
-loadDashboard();
-
-}
-
-});
-
-/* LOGIN */
-
-window.login = async function(){
-
-const email =
-document.getElementById("email").value;
-
-const password =
-document.getElementById("password").value;
-
-try{
-
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-alert("Login Successful");
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-};
-
-/* STOCK HISTORY SAVE */
-
-async function addStockHistory(
-type,
-product,
-qty
-){
-
-await addDoc(
-collection(db,"stockHistory"),
-{
-type,
-product,
-qty,
-date:new Date().toLocaleString()
-});
-
-}
-
-/* ADD PRODUCT */
-
-window.addNewProduct = async function(){
-
-const name =
-document.getElementById("newProductName")
-.value.trim();
-
-const buyPrice =
-Number(document.getElementById("newBuyPrice").value);
-
-const sellPrice =
-Number(document.getElementById("newSellPrice").value);
-
-const stock =
-Number(document.getElementById("openingStock").value);
-
-if(!name){
-
-alert("Enter Product Name");
-
-return;
-
-}
-
-const q = query(
-collection(db,"products"),
-where("name","==",name)
-);
-
-const snapshot =
-await getDocs(q);
-
-if(!snapshot.empty){
-
-alert("Product Already Exists");
-
-return;
-
-}
-
-await addDoc(collection(db,"products"),{
-name,
-buyPrice,
-sellPrice,
-stock
-});
-
-await addStockHistory(
-"Opening Stock",
-name,
-stock
-);
-
-alert("Product Added");
-
-loadProducts();
-loadStockHistory();
-loadDashboard();
-
-};
-
-/* PURCHASE */
-
-window.savePurchase = async function(){
-
-const productId =
-document.getElementById("purchaseProduct").value;
-
-const qty =
-Number(document.getElementById("purchaseQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const data =
-productSnap.data();
-
-await updateDoc(productRef,{
-stock:Number(data.stock) + qty
-});
-
-await addDoc(collection(db,"purchases"),{
-product:data.name,
-productId,
-qty,
-date:new Date().toLocaleString()
-});
-
-await addStockHistory(
-"Purchase",
-data.name,
-qty
-);
-
-alert("Purchase Saved");
-
-loadProducts();
-loadPurchases();
-loadStockHistory();
-loadDashboard();
-
-};
-
-/* ORDER */
-
-window.saveOrder = async function(){
-
-const customer =
-document.getElementById("customerName").value;
-
-const productId =
-document.getElementById("orderProduct").value;
-
-const qty =
-Number(document.getElementById("orderQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const data =
-productSnap.data();
-
-if(data.stock < qty){
-
-alert("Not Enough Stock");
-
-return;
-
-}
-
-await updateDoc(productRef,{
-stock:Number(data.stock) - qty
-});
-
-await addDoc(collection(db,"orders"),{
-customer,
-product:data.name,
-productId,
-qty,
-date:new Date().toLocaleString()
-});
-
-await addStockHistory(
-"Sale",
-data.name,
--qty
-);
-
-alert("Order Saved");
-
-loadProducts();
-loadOrders();
-loadStockHistory();
-loadDashboard();
-
-};
-
-/* RETURN */
-
-window.returnProductFunc = async function(){
-
-const productId =
-document.getElementById("returnProduct").value;
-
-const qty =
-Number(document.getElementById("returnQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const data =
-productSnap.data();
-
-await updateDoc(productRef,{
-stock:Number(data.stock) + qty
-});
-
-await addDoc(collection(db,"returns"),{
-product:data.name,
-qty,
-date:new Date().toLocaleString()
-});
-
-await addStockHistory(
-"Return",
-data.name,
-qty
-);
-
-alert("Return Saved");
-
-loadProducts();
-loadReturns();
-loadStockHistory();
-loadDashboard();
-
-};
-
-/* LOAD PRODUCTS */
-
-async function loadProducts(){
-
-const snapshot =
-await getDocs(collection(db,"products"));
-
-let html = "";
-
-let options =
-'<option value="">Select Product</option>';
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-
-<div class="item">
-
-<b>${data.name}</b>
-
-<br><br>
-
-Buy Price: ${data.buyPrice}
-
-<br>
-
-Sell Price: ${data.sellPrice}
-
-<br>
-
-Stock: ${data.stock}
-
-<br><br>
-
-<button
-class="deleteBtn"
-onclick="deleteProduct('${docSnap.id}')"
->
-
-Delete Product
-
-</button>
-
 </div>
 
-`;
+<script>
 
-options += `
+function showPage(pageId){
 
-<option value="${docSnap.id}">
-${data.name}
-</option>
+const pages =
+document.querySelectorAll('.page');
 
-`;
+pages.forEach((page)=>{
 
-});
-
-document.getElementById("productList")
-.innerHTML = html;
-
-document.getElementById("purchaseProduct")
-.innerHTML = options;
-
-document.getElementById("orderProduct")
-.innerHTML = options;
-
-document.getElementById("returnProduct")
-.innerHTML = options;
-
-}
-
-/* DELETE PRODUCT */
-
-window.deleteProduct = async function(id){
-
-await deleteDoc(doc(db,"products",id));
-
-alert("Product Deleted");
-
-loadProducts();
-loadDashboard();
-
-};
-
-/* LOAD PURCHASES */
-
-async function loadPurchases(){
-
-const snapshot =
-await getDocs(collection(db,"purchases"));
-
-let html = "";
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-
-<div class="item">
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-</div>
-
-`;
+page.classList.remove('activePage');
 
 });
 
-document.getElementById("purchaseList")
-.innerHTML = html;
-
-}
-
-/* LOAD ORDERS */
-
-async function loadOrders(){
-
-const snapshot =
-await getDocs(collection(db,"orders"));
-
-let html = "";
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-
-<div class="item">
-
-Customer: ${data.customer}
-
-<br>
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-</div>
-
-`;
-
-});
-
-document.getElementById("orderList")
-.innerHTML = html;
-
-}
-
-/* LOAD RETURNS */
-
-async function loadReturns(){
-
-const snapshot =
-await getDocs(collection(db,"returns"));
-
-let html = "";
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-
-<div class="item">
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-</div>
-
-`;
-
-});
-
-document.getElementById("returnList")
-.innerHTML = html;
-
-}
-
-/* LOAD STOCK HISTORY */
-
-async function loadStockHistory(){
-
-const snapshot =
-await getDocs(collection(db,"stockHistory"));
-
-let html = "";
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-
-<div class="item">
-
-Type: ${data.type}
-
-<br>
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-<br><br>
-
-<button
-class="deleteBtn"
-onclick="deleteStockHistory(
-'${docSnap.id}',
-'${data.product}',
-${data.qty}
-)"
->
-
-Delete History
-
-</button>
-
-</div>
-
-`;
-
-});
-
-document.getElementById("stockHistoryList")
-.innerHTML = html;
-
-}
-
-/* DELETE STOCK HISTORY */
-
-window.deleteStockHistory =
-async function(
-historyId,
-productName,
-qty
-){
-
-const confirmDelete =
-confirm("Delete this history?");
-
-if(!confirmDelete){
-
-return;
-
-}
-
-try{
-
-const productSnapshot =
-await getDocs(collection(db,"products"));
-
-let productRef = null;
-
-productSnapshot.forEach((docSnap)=>{
-
-const pdata = docSnap.data();
-
-if(
-pdata.name.trim().toLowerCase()
-===
-productName.trim().toLowerCase()
-){
-
-productRef =
-doc(db,"products",docSnap.id);
-
-}
-
-});
-
-if(productRef){
-
-const productSnap =
-await getDoc(productRef);
-
-if(productSnap.exists()){
-
-const currentStock =
-Number(productSnap.data().stock || 0);
-
-await updateDoc(productRef,{
-
-stock: currentStock - Number(qty)
-
-});
-
-}
-
-}
-
-await deleteDoc(
-doc(db,"stockHistory",historyId)
-);
-
-alert("History Deleted");
-
-loadProducts();
-loadStockHistory();
-loadDashboard();
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-};
-
-/* DASHBOARD */
-
-async function loadDashboard(){
-
-const snapshot =
-await getDocs(collection(db,"products"));
-
-let totalStock = 0;
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-totalStock += Number(data.stock || 0);
-
-});
-
-document.getElementById("totalStock")
-.innerHTML =
-"Total Stock: " + totalStock;
+document.getElementById(pageId)
+.classList.add('activePage');
 
 }
 
 </script>
-
-</body>
-  </html>
