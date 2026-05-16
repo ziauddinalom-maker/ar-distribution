@@ -1,6 +1,42 @@
-<!-- SIDEBAR -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AR Distribution</title>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#f5f5f5;
+}
+
+#dashboard{
+display:none;
+}
+
+/* LOGIN */
+
+.loginBox{
+background:white;
+padding:20px;
+border-radius:10px;
+max-width:400px;
+margin:50px auto;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+/* SIDEBAR */
 
 .sidebar{
 position:fixed;
@@ -9,7 +45,7 @@ top:0;
 width:220px;
 height:100%;
 background:#0d6efd;
-padding-top:20px;
+padding:20px 10px;
 overflow:auto;
 }
 
@@ -20,26 +56,78 @@ margin-bottom:20px;
 }
 
 .sidebar button{
-width:90%;
-margin:10px auto;
-display:block;
+width:100%;
+padding:12px;
+margin-top:10px;
 background:white;
 color:#0d6efd;
-font-weight:bold;
 border:none;
-padding:12px;
 border-radius:8px;
+font-weight:bold;
 cursor:pointer;
 }
 
 .sidebar button:hover{
-background:#e9ecef;
+opacity:0.9;
 }
+
+/* MAIN CONTENT */
 
 .mainContent{
 margin-left:240px;
-padding:10px;
+padding:20px;
 }
+
+/* BOX */
+
+.box{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:10px;
+font-size:16px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+/* BUTTON */
+
+.actionBtn{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#0d6efd;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+.deleteBtn{
+background:red;
+}
+
+/* ITEM */
+
+.item{
+background:#fafafa;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+border:1px solid #ddd;
+}
+
+/* PAGE */
 
 .page{
 display:none;
@@ -49,12 +137,19 @@ display:none;
 display:block;
 }
 
+.lowStock{
+color:red;
+font-weight:bold;
+}
+
+/* MOBILE */
+
 @media(max-width:768px){
 
 .sidebar{
+position:relative;
 width:100%;
 height:auto;
-position:relative;
 }
 
 .mainContent{
@@ -65,7 +160,33 @@ margin-left:0;
 
 </style>
 
-<!-- SIDEBAR MENU -->
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div class="loginBox" id="loginPage">
+
+<h2 style="text-align:center;margin-bottom:20px;">
+Admin Login
+</h2>
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="password" id="password" placeholder="Password">
+
+<button class="actionBtn" onclick="login()">
+Login
+</button>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard">
+
+<!-- SIDEBAR -->
 
 <div class="sidebar">
 
@@ -97,7 +218,7 @@ Reports
 
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 
 <div class="mainContent">
 
@@ -109,7 +230,11 @@ Reports
 
 <h2>Dashboard</h2>
 
-<p id="totalStock">Total Stock: 0</p>
+<br>
+
+<p id="totalStock">
+Total Stock: 0
+</p>
 
 </div>
 
@@ -123,16 +248,27 @@ Reports
 
 <h2>Add Product</h2>
 
-<input type="text" id="newProductName" placeholder="Product Name">
+<input type="text"
+id="newProductName"
+placeholder="Product Name">
 
-<input type="number" id="newBuyPrice" placeholder="Buy Price">
+<input type="number"
+id="newBuyPrice"
+placeholder="Buy Price">
 
-<input type="number" id="newSellPrice" placeholder="Sell Price">
+<input type="number"
+id="newSellPrice"
+placeholder="Sell Price">
 
-<input type="number" id="openingStock" placeholder="Opening Stock">
+<input type="number"
+id="openingStock"
+placeholder="Opening Stock">
 
-<button onclick="addNewProduct()">
+<button class="actionBtn"
+onclick="addNewProduct()">
+
 Add Product
+
 </button>
 
 </div>
@@ -156,14 +292,20 @@ Add Product
 <h2>Purchase Entry</h2>
 
 <select id="purchaseProduct">
-<option value="">Select Product</option>
+<option value="">
+Select Product
+</option>
 </select>
 
-<input type="number" id="purchaseQty"
+<input type="number"
+id="purchaseQty"
 placeholder="Purchase Quantity">
 
-<button onclick="savePurchase()">
+<button class="actionBtn"
+onclick="savePurchase()">
+
 Add Stock
+
 </button>
 
 </div>
@@ -184,27 +326,34 @@ Add Stock
 
 <div class="box">
 
-<h2>Order Entry</h2>
+<h2>Sales Entry</h2>
 
-<input type="text" id="customerName"
+<input type="text"
+id="customerName"
 placeholder="Customer Name">
 
 <select id="orderProduct">
-<option value="">Select Product</option>
+<option value="">
+Select Product
+</option>
 </select>
 
-<input type="number" id="orderQty"
+<input type="number"
+id="orderQty"
 placeholder="Order Quantity">
 
-<button onclick="saveOrder()">
-Save Order
+<button class="actionBtn"
+onclick="saveOrder()">
+
+Save Sale
+
 </button>
 
 </div>
 
 <div class="box">
 
-<h2>Order History</h2>
+<h2>Sales History</h2>
 
 <div id="orderList"></div>
 
@@ -221,14 +370,20 @@ Save Order
 <h2>Return Product</h2>
 
 <select id="returnProduct">
-<option value="">Select Product</option>
+<option value="">
+Select Product
+</option>
 </select>
 
-<input type="number" id="returnQty"
+<input type="number"
+id="returnQty"
 placeholder="Return Quantity">
 
-<button onclick="returnProductFunc()">
+<button class="actionBtn"
+onclick="returnProductFunc()">
+
 Return Product
+
 </button>
 
 </div>
@@ -259,9 +414,65 @@ Return Product
 
 </div>
 
-<script>
+</div>
 
-function showPage(pageId){
+<script type="module">
+
+/* FIREBASE IMPORT */
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+doc,
+updateDoc,
+getDoc,
+deleteDoc,
+query,
+where
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* FIREBASE CONFIG */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+
+authDomain: "ar-distribution-ca285.firebaseapp.com",
+
+projectId: "ar-distribution-ca285",
+
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
+
+messagingSenderId: "668942550210",
+
+appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+
+};
+
+/* START FIREBASE */
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const auth = getAuth(app);
+
+/* PAGE SWITCH */
+
+window.showPage = function(pageId){
 
 const pages =
 document.querySelectorAll('.page');
@@ -277,4 +488,590 @@ document.getElementById(pageId)
 
 }
 
+/* AUTO LOGIN */
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("loginPage")
+.style.display = "none";
+
+document.getElementById("dashboard")
+.style.display = "block";
+
+loadProducts();
+loadPurchases();
+loadOrders();
+loadReturns();
+loadStockHistory();
+loadDashboard();
+
+}
+
+});
+
+/* LOGIN */
+
+window.login = async function(){
+
+const email =
+document.getElementById("email").value;
+
+const password =
+document.getElementById("password").value;
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+alert("Login Successful");
+
+}catch(error){
+
+alert(error.message);
+
+}
+
+};
+
+/* STOCK HISTORY */
+
+async function addStockHistory(
+type,
+product,
+qty
+){
+
+await addDoc(
+collection(db,"stockHistory"),
+{
+type,
+product,
+qty,
+date:new Date().toLocaleString()
+});
+
+}
+
+/* ADD PRODUCT */
+
+window.addNewProduct = async function(){
+
+const name =
+document.getElementById("newProductName")
+.value.trim();
+
+const buyPrice =
+Number(document.getElementById("newBuyPrice").value);
+
+const sellPrice =
+Number(document.getElementById("newSellPrice").value);
+
+const stock =
+Number(document.getElementById("openingStock").value);
+
+if(!name){
+
+alert("Enter Product Name");
+
+return;
+
+}
+
+const q = query(
+collection(db,"products"),
+where("name","==",name)
+);
+
+const snapshot =
+await getDocs(q);
+
+if(!snapshot.empty){
+
+alert("Product Already Exists");
+
+return;
+
+}
+
+await addDoc(collection(db,"products"),{
+name,
+buyPrice,
+sellPrice,
+stock
+});
+
+await addStockHistory(
+"Opening Stock",
+name,
+stock
+);
+
+alert("Product Added");
+
+loadProducts();
+loadStockHistory();
+loadDashboard();
+
+};
+
+/* PURCHASE */
+
+window.savePurchase = async function(){
+
+const productId =
+document.getElementById("purchaseProduct").value;
+
+const qty =
+Number(document.getElementById("purchaseQty").value);
+
+if(!productId || qty <= 0){
+
+alert("Enter Correct Data");
+
+return;
+
+}
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const data =
+productSnap.data();
+
+await updateDoc(productRef,{
+stock:Number(data.stock) + qty
+});
+
+await addDoc(collection(db,"purchases"),{
+product:data.name,
+productId,
+qty,
+date:new Date().toLocaleString()
+});
+
+await addStockHistory(
+"Purchase",
+data.name,
+qty
+);
+
+alert("Purchase Saved");
+
+loadProducts();
+loadPurchases();
+loadStockHistory();
+loadDashboard();
+
+};
+
+/* SALES */
+
+window.saveOrder = async function(){
+
+const customer =
+document.getElementById("customerName").value;
+
+const productId =
+document.getElementById("orderProduct").value;
+
+const qty =
+Number(document.getElementById("orderQty").value);
+
+if(!customer || !productId || qty <= 0){
+
+alert("Enter Correct Data");
+
+return;
+
+}
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const data =
+productSnap.data();
+
+if(data.stock < qty){
+
+alert("Not Enough Stock");
+
+return;
+
+}
+
+await updateDoc(productRef,{
+stock:Number(data.stock) - qty
+});
+
+await addDoc(collection(db,"orders"),{
+customer,
+product:data.name,
+productId,
+qty,
+date:new Date().toLocaleString()
+});
+
+await addStockHistory(
+"Sale",
+data.name,
+-qty
+);
+
+alert("Sale Saved");
+
+loadProducts();
+loadOrders();
+loadStockHistory();
+loadDashboard();
+
+};
+
+/* RETURN */
+
+window.returnProductFunc = async function(){
+
+const productId =
+document.getElementById("returnProduct").value;
+
+const qty =
+Number(document.getElementById("returnQty").value);
+
+if(!productId || qty <= 0){
+
+alert("Enter Correct Data");
+
+return;
+
+}
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const data =
+productSnap.data();
+
+await updateDoc(productRef,{
+stock:Number(data.stock) + qty
+});
+
+await addDoc(collection(db,"returns"),{
+product:data.name,
+qty,
+date:new Date().toLocaleString()
+});
+
+await addStockHistory(
+"Return",
+data.name,
+qty
+);
+
+alert("Return Saved");
+
+loadProducts();
+loadReturns();
+loadStockHistory();
+loadDashboard();
+
+};
+
+/* LOAD PRODUCTS */
+
+async function loadProducts(){
+
+const snapshot =
+await getDocs(collection(db,"products"));
+
+let html = "";
+
+let options =
+'<option value="">Select Product</option>';
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+<b>${data.name}</b>
+
+<br><br>
+
+Buy Price: ${data.buyPrice}
+
+<br>
+
+Sell Price: ${data.sellPrice}
+
+<br>
+
+Stock:
+<span class="${data.stock <= 5 ? 'lowStock' : ''}">
+${data.stock}
+</span>
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteProduct('${docSnap.id}')"
+>
+
+Delete Product
+
+</button>
+
+</div>
+
+`;
+
+options += `
+
+<option value="${docSnap.id}">
+${data.name}
+</option>
+
+`;
+
+});
+
+document.getElementById("productList")
+.innerHTML = html;
+
+document.getElementById("purchaseProduct")
+.innerHTML = options;
+
+document.getElementById("orderProduct")
+.innerHTML = options;
+
+document.getElementById("returnProduct")
+.innerHTML = options;
+
+}
+
+/* DELETE PRODUCT */
+
+window.deleteProduct = async function(id){
+
+const ok =
+confirm("Delete Product?");
+
+if(!ok){
+
+return;
+
+}
+
+await deleteDoc(doc(db,"products",id));
+
+alert("Product Deleted");
+
+loadProducts();
+loadDashboard();
+
+};
+
+/* LOAD PURCHASES */
+
+async function loadPurchases(){
+
+const snapshot =
+await getDocs(collection(db,"purchases"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("purchaseList")
+.innerHTML = html;
+
+}
+
+/* LOAD SALES */
+
+async function loadOrders(){
+
+const snapshot =
+await getDocs(collection(db,"orders"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Customer: ${data.customer}
+
+<br>
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("orderList")
+.innerHTML = html;
+
+}
+
+/* LOAD RETURNS */
+
+async function loadReturns(){
+
+const snapshot =
+await getDocs(collection(db,"returns"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("returnList")
+.innerHTML = html;
+
+}
+
+/* LOAD STOCK HISTORY */
+
+async function loadStockHistory(){
+
+const snapshot =
+await getDocs(collection(db,"stockHistory"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="item">
+
+Type: ${data.type}
+
+<br>
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("stockHistoryList")
+.innerHTML = html;
+
+}
+
+/* DASHBOARD */
+
+async function loadDashboard(){
+
+const snapshot =
+await getDocs(collection(db,"products"));
+
+let totalStock = 0;
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+totalStock += Number(data.stock || 0);
+
+});
+
+document.getElementById("totalStock")
+.innerHTML =
+"Total Stock: " + totalStock;
+
+}
+
 </script>
+
+</body>
+</html>
