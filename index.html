@@ -45,10 +45,6 @@ border:none;
 cursor:pointer;
 }
 
-button:hover{
-opacity:0.9;
-}
-
 .item{
 background:#fff;
 padding:10px;
@@ -90,7 +86,7 @@ id="password"
 placeholder="Password"
 >
 
-<button type="button" id="loginBtn">
+<button onclick="login()">
 Login
 </button>
 
@@ -230,7 +226,7 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD REPORT -->
+<!-- DASHBOARD -->
 
 <div class="box">
 
@@ -250,7 +246,7 @@ Total Profit: 0
 
 </div>
 
-<!-- DAILY REPORT -->
+<!-- REPORT -->
 
 <div class="box">
 
@@ -341,7 +337,7 @@ Download PDF
 
 </div>
 
-<script type="module" defer>
+<script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -465,21 +461,11 @@ console.log(error);
 
 }
 
-
-
-// BUTTON EVENT
-
-window.addEventListener("DOMContentLoaded",()=>{
-
-document
-.getElementById("loginBtn")
-.addEventListener("click", login);
-
-});
+window.login = login;
 
 
 
-// SAVE PURCHASE
+// PURCHASE
 
 window.savePurchase = async function(){
 
@@ -513,7 +499,7 @@ loadDashboard();
 
 
 
-// ADD STOCK
+// STOCK
 
 window.addStock = async function(){
 
@@ -547,7 +533,7 @@ loadDashboard();
 
 
 
-// SAVE ORDER
+// ORDER
 
 window.saveOrder = async function(){
 
@@ -586,7 +572,7 @@ loadOrders();
 
 
 
-// SAVE SALE
+// SALE
 
 window.saveSale = async function(){
 
@@ -643,7 +629,7 @@ loadReports();
 
 
 
-// RETURN PRODUCT
+// RETURN
 
 window.returnProductFunc = async function(){
 
