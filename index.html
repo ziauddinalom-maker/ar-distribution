@@ -476,8 +476,6 @@ return;
 
 }
 
-/* DUPLICATE CHECK */
-
 const q = query(
 collection(db,"products"),
 where("name","==",name)
@@ -494,8 +492,6 @@ return;
 
 }
 
-/* SAVE PRODUCT */
-
 await addDoc(collection(db,"products"),{
 
 name,
@@ -508,11 +504,8 @@ stock
 alert("Product Added");
 
 document.getElementById("newProductName").value = "";
-
 document.getElementById("newBuyPrice").value = "";
-
 document.getElementById("newSellPrice").value = "";
-
 document.getElementById("openingStock").value = "";
 
 loadProducts();
@@ -553,15 +546,11 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-/* STOCK ADD */
-
 await updateDoc(productRef,{
 
 stock:Number(data.stock) + qty
 
 });
-
-/* SAVE PURCHASE */
 
 await addDoc(collection(db,"purchases"),{
 
@@ -617,8 +606,6 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-/* STOCK CHECK */
-
 if(data.stock < qty){
 
 alert("Not Enough Stock");
@@ -627,27 +614,22 @@ return;
 
 }
 
-/* STOCK MINUS */
-
 await updateDoc(productRef,{
 
 stock:Number(data.stock) - qty
 
 });
 
-/* PROFIT */
-
 const profit =
 (Number(data.sellPrice)
 - Number(data.buyPrice))
 * qty;
 
-/* SAVE ORDER */
-
 await addDoc(collection(db,"orders"),{
 
 customer,
 product:data.name,
+productId: productId,
 qty,
 profit,
 date:new Date().toLocaleString()
@@ -657,7 +639,6 @@ date:new Date().toLocaleString()
 alert("Order Saved");
 
 document.getElementById("customerName").value = "";
-
 document.getElementById("orderQty").value = "";
 
 loadProducts();
@@ -699,22 +680,16 @@ await getDoc(productRef);
 const data =
 productSnap.data();
 
-/* STOCK PLUS */
-
 await updateDoc(productRef,{
 
 stock:Number(data.stock) + qty
 
 });
 
-/* RETURN PROFIT */
-
 const profit =
 (Number(data.sellPrice)
 - Number(data.buyPrice))
 * qty;
-
-/* SAVE RETURN */
 
 await addDoc(collection(db,"returns"),{
 
@@ -838,6 +813,72 @@ loadReports();
 
 
 /* =========================
+DELETE ORDER
+========================= */
+
+window.deleteOrder = async function(
+orderId,
+productId,
+qty
+){
+
+const confirmDelete =
+confirm("Delete this order?");
+
+if(!confirmDelete){
+
+return;
+
+}
+
+try{
+
+if(productId){
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+if(productSnap.exists()){
+
+const currentStock =
+Number(productSnap.data().stock || 0);
+
+await updateDoc(productRef,{
+
+stock: currentStock + Number(qty)
+
+});
+
+}
+
+}
+
+await deleteDoc(
+doc(db,"orders",orderId)
+);
+
+alert("Order Deleted");
+
+loadProducts();
+loadOrders();
+loadDashboard();
+loadReports();
+
+}catch(error){
+
+console.log(error);
+
+alert("Delete Failed");
+
+}
+
+};
+
+
+/* =========================
 LOAD ORDERS
 ========================= */
 
@@ -873,6 +914,21 @@ Profit: ${data.profit}
 <br>
 
 Date: ${data.date}
+
+<br><br>
+
+<button
+class="deleteBtn"
+onclick="deleteOrder(
+'${docSnap.id}',
+'${data.productId || ""}',
+${data.qty}
+)"
+>
+
+Delete Order
+
+</button>
 
 </div>
 
@@ -956,8 +1012,6 @@ let totalOrderProfit = 0;
 
 let totalReturnProfit = 0;
 
-/* STOCK */
-
 productSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
@@ -965,8 +1019,6 @@ const data = docSnap.data();
 totalStock += Number(data.stock || 0);
 
 });
-
-/* ORDER */
 
 orderSnapshot.forEach((docSnap)=>{
 
@@ -978,8 +1030,6 @@ totalOrderProfit += Number(data.profit || 0);
 
 });
 
-/* RETURN */
-
 returnSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
@@ -990,15 +1040,11 @@ totalReturnProfit += Number(data.profit || 0);
 
 });
 
-/* FINAL */
-
 const finalSales =
 totalOrderQty - totalReturnQty;
 
 const finalProfit =
 totalOrderProfit - totalReturnProfit;
-
-/* SHOW */
 
 document.getElementById("totalStock")
 .innerHTML =
@@ -1031,23 +1077,15 @@ const returnSnapshot =
 await getDocs(collection(db,"returns"));
 
 let todayPurchase = 0;
-
 let todaySales = 0;
-
 let todayReturns = 0;
-
 let todayProfit = 0;
-
 let todayReturnProfit = 0;
 
 let monthlyPurchase = 0;
-
 let monthlySales = 0;
-
 let monthlyReturns = 0;
-
 let monthlyProfit = 0;
-
 let monthlyReturnProfit = 0;
 
 const today =
@@ -1058,8 +1096,6 @@ new Date().getMonth();
 
 const currentYear =
 new Date().getFullYear();
-
-/* PURCHASE */
 
 purchaseSnapshot.forEach((docSnap)=>{
 
@@ -1087,8 +1123,6 @@ monthlyPurchase += Number(data.qty || 0);
 }
 
 });
-
-/* ORDERS */
 
 orderSnapshot.forEach((docSnap)=>{
 
@@ -1121,8 +1155,6 @@ monthlyProfit += Number(data.profit || 0);
 
 });
 
-/* RETURNS */
-
 returnSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
@@ -1154,23 +1186,17 @@ monthlyReturnProfit += Number(data.profit || 0);
 
 });
 
-/* FINAL TODAY */
-
 const finalTodaySales =
 todaySales - todayReturns;
 
 const finalTodayProfit =
 todayProfit - todayReturnProfit;
 
-/* FINAL MONTH */
-
 const finalMonthlySales =
 monthlySales - monthlyReturns;
 
 const finalMonthlyProfit =
 monthlyProfit - monthlyReturnProfit;
-
-/* SHOW TODAY */
 
 document.getElementById("todayPurchase")
 .innerHTML =
@@ -1183,8 +1209,6 @@ document.getElementById("todaySales")
 document.getElementById("todayProfit")
 .innerHTML =
 "Today Net Profit: " + finalTodayProfit;
-
-/* SHOW MONTH */
 
 document.getElementById("monthlyPurchase")
 .innerHTML =
