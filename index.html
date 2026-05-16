@@ -1,38 +1,43 @@
+<!-- =========================
+AR DISTRIBUTION FULL SYSTEM
+========================= -->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AR Distribution</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f5f5f5;
+background:#f4f4f4;
 margin:0;
 padding:15px;
 }
 
 .box{
-background:white;
+background:#fff;
 padding:20px;
 border-radius:10px;
-max-width:600px;
 margin:auto;
 margin-top:20px;
-box-shadow:0 0 5px rgba(0,0,0,0.1);
+max-width:700px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-input,button,select{
+input,select,button{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
-box-sizing:border-box;
+font-size:16px;
 border-radius:6px;
 border:1px solid #ccc;
-font-size:16px;
+box-sizing:border-box;
 }
 
 button{
@@ -42,12 +47,19 @@ border:none;
 cursor:pointer;
 }
 
+button:hover{
+opacity:0.9;
+}
+
+.deleteBtn{
+background:red;
+}
+
 .item{
-background:#fff;
+border:1px solid #ddd;
 padding:10px;
+border-radius:8px;
 margin-top:10px;
-border-radius:5px;
-border:1px solid #eee;
 }
 
 .lowStock{
@@ -55,16 +67,12 @@ color:red;
 font-weight:bold;
 }
 
-.deleteBtn{
-background:red;
-margin-top:10px;
-}
-
 #dashboard{
 display:none;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -75,21 +83,11 @@ display:none;
 
 <h2>Admin Login</h2>
 
-<input
-type="email"
-id="email"
-placeholder="Email"
->
+<input type="email" id="email" placeholder="Email">
 
-<input
-type="password"
-id="password"
-placeholder="Password"
->
+<input type="password" id="password" placeholder="Password">
 
-<button onclick="login()">
-Login
-</button>
+<button onclick="login()">Login</button>
 
 </div>
 
@@ -97,86 +95,40 @@ Login
 
 <div id="dashboard">
 
+<!-- ADD PRODUCT -->
+
+<div class="box">
+
+<h2>Add New Product</h2>
+
+<input type="text" id="newProductName" placeholder="Product Name">
+
+<input type="number" id="newBuyPrice" placeholder="Buy Price">
+
+<input type="number" id="newSellPrice" placeholder="Sell Price">
+
+<input type="number" id="openingStock" placeholder="Opening Stock">
+
+<button onclick="addNewProduct()">
+Add Product
+</button>
+
+</div>
+
 <!-- PURCHASE -->
 
 <div class="box">
 
 <h2>Purchase Entry</h2>
 
-<select id="purchaseName">
+<select id="purchaseProduct">
 <option>Select Product</option>
 </select>
 
-<input
-type="number"
-id="buyPrice"
-placeholder="Buy Price"
->
-
-<input
-type="number"
-id="sellPrice"
-placeholder="Sell Price"
->
-
-<input
-type="number"
-id="purchaseQty"
-placeholder="Quantity"
->
+<input type="number" id="purchaseQty" placeholder="Purchase Quantity">
 
 <button onclick="savePurchase()">
-Save Purchase
-</button>
-
-</div>
-
-<!-- STOCK -->
-
-<div class="box">
-
-<h2>Stock Entry</h2>
-
-<select id="stockProduct">
-<option>Select Product</option>
-</select>
-
-<input
-type="number"
-id="stockQty"
-placeholder="Add Stock Quantity"
->
-
-<button onclick="addStock()">
-Add Stock
-</button>
-
-</div>
-
-<!-- ORDER -->
-
-<div class="box">
-
-<h2>Order Entry</h2>
-
-<input
-type="text"
-id="customerName"
-placeholder="Customer Name"
->
-
-<select id="orderProduct">
-<option>Select Product</option>
-</select>
-
-<input
-type="number"
-id="orderQty"
-placeholder="Order Quantity"
->
-
-<button onclick="saveOrder()">
-Save Order
+Add Purchase Stock
 </button>
 
 </div>
@@ -187,15 +139,11 @@ Save Order
 
 <h2>Sales Entry</h2>
 
-<select id="productSelect">
+<select id="saleProduct">
 <option>Select Product</option>
 </select>
 
-<input
-type="number"
-id="saleQty"
-placeholder="Sale Quantity"
->
+<input type="number" id="saleQty" placeholder="Sale Quantity">
 
 <button onclick="saveSale()">
 Save Sale
@@ -213,11 +161,7 @@ Save Sale
 <option>Select Product</option>
 </select>
 
-<input
-type="number"
-id="returnQty"
-placeholder="Return Quantity"
->
+<input type="number" id="returnQty" placeholder="Return Quantity">
 
 <button onclick="returnProductFunc()">
 Return Product
@@ -225,47 +169,17 @@ Return Product
 
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD REPORT -->
 
 <div class="box">
 
 <h2>Dashboard</h2>
 
-<p id="totalProducts">
-Total Stock: 0
-</p>
+<p id="totalStock">Total Stock: 0</p>
 
-<p id="totalSales">
-Total Sales: 0
-</p>
+<p id="totalSales">Total Sales: 0</p>
 
-<p id="totalProfit">
-Total Profit: 0
-</p>
-
-</div>
-
-<!-- REPORT -->
-
-<div class="box">
-
-<h2>Daily & Monthly Report</h2>
-
-<p id="dailySales">
-Daily Sales: 0
-</p>
-
-<p id="dailyProfit">
-Daily Profit: 0
-</p>
-
-<p id="monthlySales">
-Monthly Sales: 0
-</p>
-
-<p id="monthlyProfit">
-Monthly Profit: 0
-</p>
+<p id="totalProfit">Total Profit: 0</p>
 
 </div>
 
@@ -304,16 +218,6 @@ onkeyup="searchProduct()"
 
 </div>
 
-<!-- ORDER HISTORY -->
-
-<div class="box">
-
-<h2>Order History</h2>
-
-<div id="orderList"></div>
-
-</div>
-
 <!-- RETURN HISTORY -->
 
 <div class="box">
@@ -324,17 +228,9 @@ onkeyup="searchProduct()"
 
 </div>
 
-<!-- PDF -->
-
-<div class="box">
-
-<button onclick="downloadPDF()">
-Download PDF
-</button>
-
 </div>
 
-</div>
+<!-- FIREBASE -->
 
 <script type="module">
 
@@ -349,7 +245,9 @@ getDocs,
 doc,
 updateDoc,
 getDoc,
-deleteDoc
+deleteDoc,
+query,
+where
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -366,23 +264,23 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+apiKey: "YOUR_API_KEY",
 
-authDomain: "ar-distribution-ca285.firebaseapp.com",
+authDomain: "YOUR_AUTH_DOMAIN",
 
-projectId: "ar-distribution-ca285",
+projectId: "YOUR_PROJECT_ID",
 
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
+storageBucket: "YOUR_BUCKET",
 
-messagingSenderId: "668942550210",
+messagingSenderId: "YOUR_MSG_ID",
 
-appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+appId: "YOUR_APP_ID"
 
 };
 
 
 
-// START FIREBASE
+// INIT
 
 const app = initializeApp(firebaseConfig);
 
@@ -398,18 +296,14 @@ onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
-document.getElementById("loginPage").style.display =
-"none";
+document.getElementById("loginPage").style.display = "none";
 
-document.getElementById("dashboard").style.display =
-"block";
+document.getElementById("dashboard").style.display = "block";
 
 loadProducts();
 loadSales();
-loadOrders();
 loadReturns();
 loadDashboard();
-loadReports();
 
 }
 
@@ -419,7 +313,7 @@ loadReports();
 
 // LOGIN
 
-async function login(){
+window.login = async function(){
 
 const email =
 document.getElementById("email").value;
@@ -435,57 +329,111 @@ email,
 password
 );
 
-alert("Login Successful");
-
-document.getElementById("loginPage").style.display =
-"none";
-
-document.getElementById("dashboard").style.display =
-"block";
-
-loadProducts();
-loadSales();
-loadOrders();
-loadReturns();
-loadDashboard();
-loadReports();
+alert("Login Success");
 
 }catch(error){
 
 alert(error.message);
 
-console.log(error);
-
 }
 
-}
-
-window.login = login;
+};
 
 
 
-// PURCHASE
+// ADD NEW PRODUCT
 
-window.savePurchase = async function(){
+window.addNewProduct = async function(){
 
 const name =
-document.getElementById("purchaseName").value;
+document.getElementById("newProductName").value;
 
 const buyPrice =
-Number(document.getElementById("buyPrice").value);
+Number(document.getElementById("newBuyPrice").value);
 
 const sellPrice =
-Number(document.getElementById("sellPrice").value);
+Number(document.getElementById("newSellPrice").value);
 
-const qty =
-Number(document.getElementById("purchaseQty").value);
+const stock =
+Number(document.getElementById("openingStock").value);
+
+if(!name){
+
+alert("Enter Product Name");
+
+return;
+
+}
+
+
+
+// DUPLICATE CHECK
+
+const q = query(
+collection(db,"products"),
+where("name","==",name)
+);
+
+const snapshot = await getDocs(q);
+
+if(!snapshot.empty){
+
+alert("Product Already Exists");
+
+return;
+
+}
+
+
 
 await addDoc(collection(db,"products"),{
 
 name,
 buyPrice,
 sellPrice,
-stock: qty
+stock
+
+});
+
+alert("Product Added");
+
+loadProducts();
+loadDashboard();
+
+};
+
+
+
+// PURCHASE STOCK
+
+window.savePurchase = async function(){
+
+const productId =
+document.getElementById("purchaseProduct").value;
+
+const qty =
+Number(document.getElementById("purchaseQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const snap =
+await getDoc(productRef);
+
+const data =
+snap.data();
+
+await updateDoc(productRef,{
+
+stock: data.stock + qty
+
+});
+
+await addDoc(collection(db,"purchases"),{
+
+product:data.name,
+qty,
+date:new Date().toLocaleString()
 
 });
 
@@ -498,85 +446,12 @@ loadDashboard();
 
 
 
-// STOCK
-
-window.addStock = async function(){
-
-const productId =
-document.getElementById("stockProduct").value;
-
-const qty =
-Number(document.getElementById("stockQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-await updateDoc(productRef,{
-
-stock: productData.stock + qty
-
-});
-
-alert("Stock Added");
-
-loadProducts();
-loadDashboard();
-
-};
-
-
-
-// ORDER
-
-window.saveOrder = async function(){
-
-const customer =
-document.getElementById("customerName").value;
-
-const productId =
-document.getElementById("orderProduct").value;
-
-const qty =
-Number(document.getElementById("orderQty").value);
-
-const productRef =
-doc(db,"products",productId);
-
-const productSnap =
-await getDoc(productRef);
-
-const productData =
-productSnap.data();
-
-await addDoc(collection(db,"orders"),{
-
-customer,
-product: productData.name,
-qty,
-date:new Date().toLocaleString()
-
-});
-
-alert("Order Saved");
-
-loadOrders();
-
-};
-
-
-
-// SALE
+// SALES
 
 window.saveSale = async function(){
 
 const productId =
-document.getElementById("productSelect").value;
+document.getElementById("saleProduct").value;
 
 const qty =
 Number(document.getElementById("saleQty").value);
@@ -584,13 +459,13 @@ Number(document.getElementById("saleQty").value);
 const productRef =
 doc(db,"products",productId);
 
-const productSnap =
+const snap =
 await getDoc(productRef);
 
-const productData =
-productSnap.data();
+const data =
+snap.data();
 
-if(productData.stock < qty){
+if(data.stock < qty){
 
 alert("Not Enough Stock");
 
@@ -600,17 +475,16 @@ return;
 
 await updateDoc(productRef,{
 
-stock: productData.stock - qty
+stock:data.stock - qty
 
 });
 
 const profit =
-(productData.sellPrice - productData.buyPrice)
-* qty;
+(data.sellPrice - data.buyPrice) * qty;
 
 await addDoc(collection(db,"sales"),{
 
-product: productData.name,
+product:data.name,
 qty,
 profit,
 date:new Date().toLocaleString()
@@ -622,7 +496,6 @@ alert("Sale Saved");
 loadProducts();
 loadSales();
 loadDashboard();
-loadReports();
 
 };
 
@@ -641,21 +514,21 @@ Number(document.getElementById("returnQty").value);
 const productRef =
 doc(db,"products",productId);
 
-const productSnap =
+const snap =
 await getDoc(productRef);
 
-const productData =
-productSnap.data();
+const data =
+snap.data();
 
 await updateDoc(productRef,{
 
-stock: productData.stock + qty
+stock:data.stock + qty
 
 });
 
 await addDoc(collection(db,"returns"),{
 
-product: productData.name,
+product:data.name,
 qty,
 date:new Date().toLocaleString()
 
@@ -675,7 +548,7 @@ loadDashboard();
 
 async function loadProducts(){
 
-const querySnapshot =
+const snapshot =
 await getDocs(collection(db,"products"));
 
 let html = "";
@@ -683,11 +556,12 @@ let html = "";
 let options =
 "<option>Select Product</option>";
 
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
 <b>${data.name}</b>
@@ -713,18 +587,25 @@ ${data.stock <= 5
 
 <br><br>
 
-<button class="deleteBtn"
-onclick="deleteProduct('${docSnap.id}')">
-Delete
+<button
+class="deleteBtn"
+onclick="deleteProduct('${docSnap.id}')"
+>
+
+Delete Product
+
 </button>
 
 </div>
+
 `;
 
 options += `
+
 <option value="${docSnap.id}">
 ${data.name}
 </option>
+
 `;
 
 });
@@ -732,19 +613,13 @@ ${data.name}
 document.getElementById("productList").innerHTML =
 html;
 
-document.getElementById("productSelect").innerHTML =
+document.getElementById("purchaseProduct").innerHTML =
+options;
+
+document.getElementById("saleProduct").innerHTML =
 options;
 
 document.getElementById("returnProduct").innerHTML =
-options;
-
-document.getElementById("orderProduct").innerHTML =
-options;
-
-document.getElementById("stockProduct").innerHTML =
-options;
-
-document.getElementById("purchaseName").innerHTML =
 options;
 
 }
@@ -770,16 +645,17 @@ loadDashboard();
 
 async function loadSales(){
 
-const querySnapshot =
+const snapshot =
 await getDocs(collection(db,"sales"));
 
 let html = "";
 
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
 Product: ${data.product}
@@ -796,14 +672,8 @@ Profit: ${data.profit}
 
 Date: ${data.date}
 
-<br><br>
-
-<button class="deleteBtn"
-onclick="deleteSale('${docSnap.id}')">
-Delete
-</button>
-
 </div>
+
 `;
 
 });
@@ -815,99 +685,21 @@ html;
 
 
 
-// DELETE SALE
-
-window.deleteSale = async function(id){
-
-await deleteDoc(doc(db,"sales",id));
-
-alert("Sale Deleted");
-
-loadSales();
-loadDashboard();
-loadReports();
-
-};
-
-
-
-// LOAD ORDERS
-
-async function loadOrders(){
-
-const querySnapshot =
-await getDocs(collection(db,"orders"));
-
-let html = "";
-
-querySnapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-<div class="item">
-
-Customer: ${data.customer}
-
-<br>
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-<br><br>
-
-<button class="deleteBtn"
-onclick="deleteOrder('${docSnap.id}')">
-Delete
-</button>
-
-</div>
-`;
-
-});
-
-document.getElementById("orderList").innerHTML =
-html;
-
-}
-
-
-
-// DELETE ORDER
-
-window.deleteOrder = async function(id){
-
-await deleteDoc(doc(db,"orders",id));
-
-alert("Order Deleted");
-
-loadOrders();
-
-};
-
-
-
 // LOAD RETURNS
 
 async function loadReturns(){
 
-const querySnapshot =
+const snapshot =
 await getDocs(collection(db,"returns"));
 
 let html = "";
 
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
 Product: ${data.product}
@@ -920,14 +712,8 @@ Return Qty: ${data.qty}
 
 Date: ${data.date}
 
-<br><br>
-
-<button class="deleteBtn"
-onclick="deleteReturn('${docSnap.id}')">
-Delete
-</button>
-
 </div>
+
 `;
 
 });
@@ -936,20 +722,6 @@ document.getElementById("returnList").innerHTML =
 html;
 
 }
-
-
-
-// DELETE RETURN
-
-window.deleteReturn = async function(id){
-
-await deleteDoc(doc(db,"returns",id));
-
-alert("Return Deleted");
-
-loadReturns();
-
-};
 
 
 
@@ -963,7 +735,7 @@ await getDocs(collection(db,"products"));
 const salesSnapshot =
 await getDocs(collection(db,"sales"));
 
-let totalProducts = 0;
+let totalStock = 0;
 
 let totalSales = 0;
 
@@ -973,7 +745,7 @@ productSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-totalProducts += data.stock || 0;
+totalStock += Number(data.stock || 0);
 
 });
 
@@ -981,86 +753,20 @@ salesSnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-totalSales += data.qty || 0;
+totalSales += Number(data.qty || 0);
 
-totalProfit += data.profit || 0;
+totalProfit += Number(data.profit || 0);
 
 });
 
-document.getElementById("totalProducts").innerHTML =
-"Total Stock: " + totalProducts;
+document.getElementById("totalStock").innerHTML =
+"Total Stock: " + totalStock;
 
 document.getElementById("totalSales").innerHTML =
 "Total Sales: " + totalSales;
 
 document.getElementById("totalProfit").innerHTML =
 "Total Profit: " + totalProfit;
-
-};
-
-
-
-// REPORTS
-
-async function loadReports(){
-
-const snapshot =
-await getDocs(collection(db,"sales"));
-
-let dailySales = 0;
-
-let dailyProfit = 0;
-
-let monthlySales = 0;
-
-let monthlyProfit = 0;
-
-const today =
-new Date().toLocaleDateString();
-
-const currentMonth =
-new Date().getMonth();
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-const saleDate =
-new Date(data.date);
-
-if(
-saleDate.toLocaleDateString() === today
-){
-
-dailySales += Number(data.qty || 0);
-
-dailyProfit += Number(data.profit || 0);
-
-}
-
-if(
-saleDate.getMonth() === currentMonth
-){
-
-monthlySales += Number(data.qty || 0);
-
-monthlyProfit += Number(data.profit || 0);
-
-}
-
-});
-
-document.getElementById("dailySales").innerHTML =
-"Daily Sales: " + dailySales;
-
-document.getElementById("dailyProfit").innerHTML =
-"Daily Profit: " + dailyProfit;
-
-document.getElementById("monthlySales").innerHTML =
-"Monthly Sales: " + monthlySales;
-
-document.getElementById("monthlyProfit").innerHTML =
-"Monthly Profit: " + monthlyProfit;
 
 };
 
@@ -1094,16 +800,6 @@ item.style.display = "none";
 }
 
 });
-
-};
-
-
-
-// PDF
-
-window.downloadPDF = function(){
-
-window.print();
 
 };
 
