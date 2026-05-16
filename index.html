@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,6 +18,10 @@ font-family:Arial;
 
 body{
 background:#f5f5f5;
+}
+
+#dashboard{
+display:none;
 }
 
 /* LOGIN */
@@ -156,6 +161,7 @@ margin-left:0;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -180,7 +186,7 @@ Login
 
 <!-- DASHBOARD -->
 
-<div id="dashboard" style="display:none;">
+<div id="dashboard">
 
 <!-- SIDEBAR -->
 
@@ -230,7 +236,7 @@ Logout
 
 <div class="mainContent">
 
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 
 <div id="dashboardPage" class="page activePage">
 
@@ -258,7 +264,7 @@ Logout
 
 <div class="dashboardCard">
 <h3>Monthly Sales</h3>
-<p id="monthlySales">0</p>
+<p id="monthlySalesCard">0</p>
 </div>
 
 <div class="dashboardCard">
@@ -288,7 +294,7 @@ Logout
 
 </div>
 
-<!-- PRODUCT PAGE -->
+<!-- PRODUCT -->
 
 <div id="productPage" class="page">
 
@@ -320,7 +326,7 @@ Add Product
 
 </div>
 
-<!-- PURCHASE PAGE -->
+<!-- PURCHASE -->
 
 <div id="purchasePage" class="page">
 
@@ -348,7 +354,7 @@ Save Purchase
 
 </div>
 
-<!-- SALES PAGE -->
+<!-- SALES -->
 
 <div id="salesPage" class="page">
 
@@ -380,7 +386,7 @@ Save Sale
 
 </div>
 
-<!-- RETURN PAGE -->
+<!-- RETURN -->
 
 <div id="returnPage" class="page">
 
@@ -408,7 +414,7 @@ Save Return
 
 </div>
 
-<!-- REPORT PAGE -->
+<!-- REPORT -->
 
 <div id="reportPage" class="page">
 
@@ -438,7 +444,7 @@ Monthly Sales Qty: 0
 
 </div>
 
-<!-- OFFICER PAGE -->
+<!-- OFFICER -->
 
 <div id="officerPage" class="page">
 
@@ -483,7 +489,9 @@ getDocs,
 doc,
 updateDoc,
 getDoc,
-deleteDoc
+deleteDoc,
+query,
+where
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -499,17 +507,17 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-apiKey: "YOUR_API_KEY",
+apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
 
-authDomain: "YOUR_DOMAIN",
+authDomain: "ar-distribution-ca285.firebaseapp.com",
 
-projectId: "YOUR_PROJECT_ID",
+projectId: "ar-distribution-ca285",
 
-storageBucket: "YOUR_BUCKET",
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
 
-messagingSenderId: "YOUR_MSG_ID",
+messagingSenderId: "668942550210",
 
-appId: "YOUR_APP_ID"
+appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
 
@@ -597,11 +605,24 @@ loadProducts();
 loadPurchases();
 loadOrders();
 loadReturns();
-loadDashboard();
 loadReports();
+loadDashboard();
 loadOfficers();
 loadOfficerOptions();
 loadStockHistory();
+
+}
+
+/* STOCK HISTORY */
+
+async function addStockHistory(type,product,qty){
+
+await addDoc(collection(db,"stockHistory"),{
+type,
+product,
+qty,
+date:new Date().toLocaleString()
+});
 
 }
 
@@ -626,12 +647,31 @@ alert("Enter Product Name");
 return;
 }
 
+const q = query(
+collection(db,"products"),
+where("name","==",name)
+);
+
+const snapshot =
+await getDocs(q);
+
+if(!snapshot.empty){
+alert("Product Already Exists");
+return;
+}
+
 await addDoc(collection(db,"products"),{
 name,
 buyPrice,
 sellPrice,
 stock
 });
+
+await addStockHistory(
+"Opening Stock",
+name,
+stock
+);
 
 alert("Product Added");
 
@@ -665,7 +705,8 @@ if(data.stock <= 5){
 
 lowHtml += `
 <div class="item">
-${data.name} :
+${data.name}
+:
 <span class="lowStock">
 ${data.stock}
 </span>
@@ -682,11 +723,11 @@ html += `
 
 <br><br>
 
-Buy: ${data.buyPrice}
+Buy Price: ${data.buyPrice}
 
 <br>
 
-Sell: ${data.sellPrice}
+Sell Price: ${data.sellPrice}
 
 <br>
 
@@ -701,7 +742,9 @@ ${data.stock}
 class="actionBtn deleteBtn"
 onclick="deleteProduct('${docSnap.id}')"
 >
-Delete
+
+Delete Product
+
 </button>
 
 </div>
@@ -750,6 +793,8 @@ if(!ok) return;
 
 await deleteDoc(doc(db,"products",id));
 
+alert("Product Deleted");
+
 refreshData();
 
 }
@@ -784,9 +829,16 @@ stock:Number(data.stock)+qty
 
 await addDoc(collection(db,"purchases"),{
 product:data.name,
+productId,
 qty,
 date:new Date().toLocaleString()
 });
+
+await addStockHistory(
+"Purchase",
+data.name,
+qty
+);
 
 alert("Purchase Saved");
 
@@ -809,11 +861,17 @@ const data = docSnap.data();
 
 html += `
 <div class="item">
-${data.product}
+
+Product: ${data.product}
+
 <br>
+
 Qty: ${data.qty}
+
 <br>
-${data.date}
+
+Date: ${data.date}
+
 </div>
 `;
 
@@ -872,9 +930,16 @@ await addDoc(collection(db,"orders"),{
 customer,
 officer,
 product:data.name,
+productId,
 qty,
 date:new Date().toLocaleString()
 });
+
+await addStockHistory(
+"Sale",
+data.name,
+-qty
+);
 
 alert("Sale Saved");
 
@@ -914,15 +979,40 @@ todayQty += Number(data.qty || 0);
 
 html += `
 <div class="item">
+
 Customer: ${data.customer}
+
 <br>
+
 Officer: ${data.officer}
+
 <br>
+
 Product: ${data.product}
+
 <br>
+
 Qty: ${data.qty}
+
 <br>
-${data.date}
+
+Date: ${data.date}
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOrder(
+'${docSnap.id}',
+'${data.productId}',
+${data.qty}
+)"
+>
+
+Delete Order
+
+</button>
+
 </div>
 `;
 
@@ -937,8 +1027,39 @@ document.getElementById("todayOrder")
 document.getElementById("cumulativeOrder")
 .innerHTML = totalQty;
 
-document.getElementById("monthlySales")
+document.getElementById("monthlySalesCard")
 .innerHTML = totalQty;
+
+}
+
+/* DELETE ORDER */
+
+window.deleteOrder =
+async function(orderId,productId,qty){
+
+const ok =
+confirm("Delete Order?");
+
+if(!ok) return;
+
+const productRef =
+doc(db,"products",productId);
+
+const snap =
+await getDoc(productRef);
+
+const data =
+snap.data();
+
+await updateDoc(productRef,{
+stock:Number(data.stock)+Number(qty)
+});
+
+await deleteDoc(doc(db,"orders",orderId));
+
+alert("Order Deleted");
+
+refreshData();
 
 }
 
@@ -976,6 +1097,12 @@ qty,
 date:new Date().toLocaleString()
 });
 
+await addStockHistory(
+"Return",
+data.name,
+qty
+);
+
 alert("Return Saved");
 
 refreshData();
@@ -997,11 +1124,17 @@ const data = docSnap.data();
 
 html += `
 <div class="item">
-${data.product}
+
+Product: ${data.product}
+
 <br>
+
 Qty: ${data.qty}
+
 <br>
-${data.date}
+
+Date: ${data.date}
+
 </div>
 `;
 
@@ -1108,7 +1241,8 @@ return;
 
 await addDoc(collection(db,"officers"),{
 name,
-email
+email,
+date:new Date().toLocaleString()
 });
 
 alert("Officer Added");
@@ -1132,9 +1266,24 @@ const data = docSnap.data();
 
 html += `
 <div class="item">
-${data.name}
+
+Officer Name: ${data.name}
+
 <br>
-${data.email}
+
+Officer Email: ${data.email}
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOfficer('${docSnap.id}')"
+>
+
+Delete Officer
+
+</button>
+
 </div>
 `;
 
@@ -1142,6 +1291,23 @@ ${data.email}
 
 document.getElementById("officerList")
 .innerHTML = html;
+
+}
+
+/* DELETE OFFICER */
+
+window.deleteOfficer = async function(id){
+
+const ok =
+confirm("Delete Officer?");
+
+if(!ok) return;
+
+await deleteDoc(doc(db,"officers",id));
+
+alert("Officer Deleted");
+
+refreshData();
 
 }
 
@@ -1176,9 +1342,39 @@ document.getElementById("salesOfficer")
 
 async function loadStockHistory(){
 
+const snapshot =
+await getDocs(collection(db,"stockHistory"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+<div class="item">
+
+Type: ${data.type}
+
+<br>
+
+Product: ${data.product}
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+`;
+
+});
+
 document.getElementById("stockHistoryList")
-.innerHTML =
-"Stock History Running";
+.innerHTML = html;
 
 }
 
