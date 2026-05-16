@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>AR Distribution</title>
 
 <style>
@@ -54,6 +53,11 @@ border:1px solid #eee;
 .lowStock{
 color:red;
 font-weight:bold;
+}
+
+.deleteBtn{
+background:red;
+margin-top:10px;
 }
 
 #dashboard{
@@ -709,7 +713,8 @@ ${data.stock <= 5
 
 <br><br>
 
-<button onclick="deleteProduct('${docSnap.id}')">
+<button class="deleteBtn"
+onclick="deleteProduct('${docSnap.id}')">
 Delete
 </button>
 
@@ -752,6 +757,8 @@ window.deleteProduct = async function(id){
 
 await deleteDoc(doc(db,"products",id));
 
+alert("Product Deleted");
+
 loadProducts();
 loadDashboard();
 
@@ -789,6 +796,13 @@ Profit: ${data.profit}
 
 Date: ${data.date}
 
+<br><br>
+
+<button class="deleteBtn"
+onclick="deleteSale('${docSnap.id}')">
+Delete
+</button>
+
 </div>
 `;
 
@@ -798,6 +812,22 @@ document.getElementById("salesList").innerHTML =
 html;
 
 }
+
+
+
+// DELETE SALE
+
+window.deleteSale = async function(id){
+
+await deleteDoc(doc(db,"sales",id));
+
+alert("Sale Deleted");
+
+loadSales();
+loadDashboard();
+loadReports();
+
+};
 
 
 
@@ -831,6 +861,13 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
+<br><br>
+
+<button class="deleteBtn"
+onclick="deleteOrder('${docSnap.id}')">
+Delete
+</button>
+
 </div>
 `;
 
@@ -840,6 +877,20 @@ document.getElementById("orderList").innerHTML =
 html;
 
 }
+
+
+
+// DELETE ORDER
+
+window.deleteOrder = async function(id){
+
+await deleteDoc(doc(db,"orders",id));
+
+alert("Order Deleted");
+
+loadOrders();
+
+};
 
 
 
@@ -869,6 +920,13 @@ Return Qty: ${data.qty}
 
 Date: ${data.date}
 
+<br><br>
+
+<button class="deleteBtn"
+onclick="deleteReturn('${docSnap.id}')">
+Delete
+</button>
+
 </div>
 `;
 
@@ -878,6 +936,20 @@ document.getElementById("returnList").innerHTML =
 html;
 
 }
+
+
+
+// DELETE RETURN
+
+window.deleteReturn = async function(id){
+
+await deleteDoc(doc(db,"returns",id));
+
+alert("Return Deleted");
+
+loadReturns();
+
+};
 
 
 
