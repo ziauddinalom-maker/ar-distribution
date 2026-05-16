@@ -11,26 +11,28 @@
 
 body{
 font-family:Arial;
-background:#f1f1f1;
+background:#f5f5f5;
 margin:0;
-padding:10px;
+padding:15px;
 }
 
 .box{
-background:#fff;
-padding:15px;
+background:white;
+padding:20px;
 border-radius:10px;
-margin-bottom:15px;
+max-width:600px;
+margin:auto;
+margin-top:20px;
 box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 
-input,select,button{
+input,button,select{
 width:100%;
 padding:10px;
-margin-top:8px;
+margin-top:10px;
+box-sizing:border-box;
 border-radius:6px;
 border:1px solid #ccc;
-box-sizing:border-box;
 font-size:16px;
 }
 
@@ -46,19 +48,20 @@ opacity:0.9;
 }
 
 .item{
-background:#fafafa;
+background:#ffffff;
 padding:10px;
-border-radius:8px;
 margin-top:10px;
+border-radius:5px;
+border:1px solid #eee;
 }
 
-.low{
+.lowStock{
 color:red;
 font-weight:bold;
 }
 
-h2{
-margin-top:0;
+#dashboard{
+display:none;
 }
 
 </style>
@@ -69,123 +72,161 @@ margin-top:0;
 
 <!-- LOGIN -->
 
-<div class="box">
+<div class="box" id="loginPage">
 
-<h2>Login</h2>
+<h2>Admin Login</h2>
 
-<input type="email" id="email" placeholder="Email">
+<input
+type="email"
+id="email"
+placeholder="Email"
+>
 
-<input type="password" id="password" placeholder="Password">
+<input
+type="password"
+id="password"
+placeholder="Password"
+>
 
-<button onclick="login()">Login</button>
-
-<button onclick="logout()">Logout</button>
-
-</div>
-
-<!-- PURCHASE -->
-
-<div class="box purchaseBox">
-
-<h2>Purchase Product</h2>
-
-<input type="text" id="productName" placeholder="Product Name">
-
-<input type="number" id="buyPrice" placeholder="Buy Price">
-
-<input type="number" id="sellPrice" placeholder="Sell Price">
-
-<input type="number" id="stock" placeholder="Stock Quantity">
-
-<button onclick="addPurchase()">Save Product</button>
-
-</div>
-
-<!-- SELL PRODUCT -->
-
-<div class="box">
-
-<h2>Sell Product</h2>
-
-<select id="sellProduct"></select>
-
-<input type="number" id="sellQty" placeholder="Sell Quantity">
-
-<button onclick="sellProduct()">Sell Product</button>
+<button onclick="login()">
+Login
+</button>
 
 </div>
 
 <!-- DASHBOARD -->
 
+<div id="dashboard">
+
+<!-- PURCHASE -->
+
+<div class="box">
+
+<h2>Purchase Entry</h2>
+
+<input
+type="text"
+id="purchaseName"
+placeholder="Product Name"
+>
+
+<input
+type="number"
+id="buyPrice"
+placeholder="Buy Price"
+>
+
+<input
+type="number"
+id="sellPrice"
+placeholder="Sell Price"
+>
+
+<input
+type="number"
+id="purchaseQty"
+placeholder="Quantity"
+>
+
+<button onclick="savePurchase()">
+Save Purchase
+</button>
+
+</div>
+
+<!-- SALES -->
+
+<div class="box">
+
+<h2>Sales Entry</h2>
+
+<select id="productSelect">
+<option>Select Product</option>
+</select>
+
+<input
+type="number"
+id="saleQty"
+placeholder="Sale Quantity"
+>
+
+<button onclick="saveSale()">
+Save Sale
+</button>
+
+</div>
+
+<!-- RETURN -->
+
+<div class="box">
+
+<h2>Return Product</h2>
+
+<select id="returnProduct">
+<option>Select Product</option>
+</select>
+
+<input
+type="number"
+id="returnQty"
+placeholder="Return Quantity"
+>
+
+<button onclick="returnProductFunc()">
+Return Product
+</button>
+
+</div>
+
+<!-- DASHBOARD REPORT -->
+
 <div class="box">
 
 <h2>Dashboard</h2>
 
-<p id="totalProducts">Total Stock: 0</p>
+<p id="totalProducts">
+Total Stock: 0
+</p>
 
-<p id="totalSales">Total Sales: 0</p>
+<p id="totalSales">
+Total Sales: 0
+</p>
 
-<p id="totalProfit">Total Profit: 0</p>
+<p id="totalProfit">
+Total Profit: 0
+</p>
 
 </div>
 
-<!-- DAILY & MONTHLY REPORT -->
+<!-- DAILY MONTHLY REPORT -->
 
 <div class="box">
 
 <h2>Daily & Monthly Report</h2>
 
-<p id="dailySales">Daily Sales: 0</p>
+<p id="dailySales">
+Daily Sales: 0
+</p>
 
-<p id="dailyProfit">Daily Profit: 0</p>
+<p id="dailyProfit">
+Daily Profit: 0
+</p>
 
-<p id="monthlySales">Monthly Sales: 0</p>
+<p id="monthlySales">
+Monthly Sales: 0
+</p>
 
-<p id="monthlyProfit">Monthly Profit: 0</p>
-
-</div>
-
-<!-- SALES REPORT -->
-
-<div class="box">
-
-<h2>Sales Report</h2>
-
-<p id="salesCount">Total Sales Orders: 0</p>
-
-<p id="salesAmount">Total Sales Amount: 0</p>
-
-<div id="salesReportList"></div>
+<p id="monthlyProfit">
+Monthly Profit: 0
+</p>
 
 </div>
 
-<!-- ORDER REPORT -->
+<!-- SEARCH -->
 
 <div class="box">
 
-<h2>Order Report</h2>
-
-<p id="orderCount">Total Orders: 0</p>
-
-<div id="orderReportList"></div>
-
-</div>
-
-<!-- RETURN REPORT -->
-
-<div class="box">
-
-<h2>Return Report</h2>
-
-<p id="returnCount">Total Returns: 0</p>
-
-<div id="returnReportList"></div>
-
-</div>
-
-<!-- PRODUCTS -->
-
-<div class="box">
+<h2>Search Product</h2>
 
 <input
 type="text"
@@ -194,11 +235,47 @@ placeholder="Search Product"
 onkeyup="searchProduct()"
 >
 
-<button onclick="downloadPDF()">Download PDF</button>
+</div>
 
-<h2>Products</h2>
+<!-- PRODUCT LIST -->
+
+<div class="box">
+
+<h2>Product List</h2>
 
 <div id="productList"></div>
+
+</div>
+
+<!-- SALES HISTORY -->
+
+<div class="box">
+
+<h2>Sales History</h2>
+
+<div id="salesList"></div>
+
+</div>
+
+<!-- RETURN HISTORY -->
+
+<div class="box">
+
+<h2>Return History</h2>
+
+<div id="returnList"></div>
+
+</div>
+
+<!-- PDF -->
+
+<div class="box">
+
+<button onclick="downloadPDF()">
+Download PDF
+</button>
+
+</div>
 
 </div>
 
@@ -214,6 +291,7 @@ addDoc,
 getDocs,
 doc,
 updateDoc,
+getDoc,
 deleteDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -221,31 +299,28 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
 getAuth,
 signInWithEmailAndPassword,
-signOut,
-onAuthStateChanged
+onAuthStateChanged,
+signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
 
-// ================= FIREBASE CONFIG =================
-// এখানে আপনার আসল Firebase Config বসাবেন
-// Firebase Console থেকে copy করবেন
-// ===================================================
+// FIREBASE CONFIG
 
 const firebaseConfig = {
 
-apiKey: "PASTE_YOUR_REAL_API_KEY",
+apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
 
-authDomain: "PASTE_YOUR_REAL_AUTH_DOMAIN",
+authDomain: "ar-distribution-ca285.firebaseapp.com",
 
-projectId: "PASTE_YOUR_REAL_PROJECT_ID",
+projectId: "ar-distribution-ca285",
 
-storageBucket: "PASTE_YOUR_REAL_STORAGE_BUCKET",
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
 
-messagingSenderId: "PASTE_YOUR_REAL_MESSAGING_SENDER_ID",
+messagingSenderId: "668942550210",
 
-appId: "PASTE_YOUR_REAL_APP_ID"
+appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
 
@@ -261,11 +336,37 @@ const auth = getAuth(app);
 
 
 
+// AUTO LOGIN
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("loginPage").style.display =
+"none";
+
+document.getElementById("dashboard").style.display =
+"block";
+
+loadProducts();
+
+loadSales();
+
+loadReturns();
+
+loadDashboard();
+
+loadReports();
+
+}
+
+});
+
+
+
 // LOGIN
 
 window.login = async function(){
-
-try{
 
 const email =
 document.getElementById("email").value;
@@ -273,13 +374,31 @@ document.getElementById("email").value;
 const password =
 document.getElementById("password").value;
 
+try{
+
 await signInWithEmailAndPassword(
 auth,
 email,
 password
 );
 
-alert("Login Success");
+alert("Login Successful");
+
+document.getElementById("loginPage").style.display =
+"none";
+
+document.getElementById("dashboard").style.display =
+"block";
+
+loadProducts();
+
+loadSales();
+
+loadReturns();
+
+loadDashboard();
+
+loadReports();
 
 }catch(error){
 
@@ -303,51 +422,25 @@ location.reload();
 
 
 
-// AUTH CHECK
+// SAVE PURCHASE
 
-onAuthStateChanged(auth, async(user)=>{
-
-if(user){
-
-loadProducts();
-
-loadDashboard();
-
-loadReports();
-
-loadSalesReport();
-
-loadOrderReport();
-
-loadReturnReport();
-
-}
-
-});
-
-
-
-// ADD PRODUCT
-
-window.addPurchase = async function(){
-
-try{
+window.savePurchase = async function(){
 
 const name =
-document.getElementById("productName").value;
+document.getElementById("purchaseName").value;
 
-const buy =
+const buyPrice =
 Number(document.getElementById("buyPrice").value);
 
-const sell =
+const sellPrice =
 Number(document.getElementById("sellPrice").value);
 
-const stock =
-Number(document.getElementById("stock").value);
+const qty =
+Number(document.getElementById("purchaseQty").value);
 
-if(!name || buy<=0 || sell<=0 || stock<=0){
+if(!name || qty<=0){
 
-alert("Please enter valid data");
+alert("Enter valid data");
 
 return;
 
@@ -355,35 +448,26 @@ return;
 
 await addDoc(collection(db,"products"),{
 
-name:name,
-
-buy:buy,
-
-sell:sell,
-
-stock:stock
+name,
+buyPrice,
+sellPrice,
+stock: qty
 
 });
 
-alert("Product Saved");
+alert("Purchase Saved");
 
-document.getElementById("productName").value = "";
+document.getElementById("purchaseName").value = "";
 
 document.getElementById("buyPrice").value = "";
 
 document.getElementById("sellPrice").value = "";
 
-document.getElementById("stock").value = "";
+document.getElementById("purchaseQty").value = "";
 
 loadProducts();
 
 loadDashboard();
-
-}catch(error){
-
-alert(error.message);
-
-}
 
 };
 
@@ -393,23 +477,17 @@ alert(error.message);
 
 async function loadProducts(){
 
-const snapshot =
+const querySnapshot =
 await getDocs(collection(db,"products"));
 
 let html = "";
 
 let options =
-"<option value=''>Select Product</option>";
+"<option>Select Product</option>";
 
-snapshot.forEach((docSnap)=>{
+querySnapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
-
-options += `
-<option value="${data.name}">
-${data.name}
-</option>
-`;
 
 html += `
 <div class="item">
@@ -418,11 +496,11 @@ html += `
 
 <br><br>
 
-Buy Price: ${data.buy}
+Buy Price: ${data.buyPrice}
 
 <br>
 
-Sell Price: ${data.sell}
+Sell Price: ${data.sellPrice}
 
 <br>
 
@@ -431,7 +509,7 @@ Stock: ${data.stock}
 <br>
 
 ${data.stock <= 5
-? '<span class="low">⚠️ Low Stock</span>'
+? '<span class="lowStock">⚠️ Low Stock</span>'
 : ''
 }
 
@@ -444,12 +522,21 @@ Delete
 </div>
 `;
 
+options += `
+<option value="${docSnap.id}">
+${data.name}
+</option>
+`;
+
 });
 
 document.getElementById("productList").innerHTML =
 html;
 
-document.getElementById("sellProduct").innerHTML =
+document.getElementById("productSelect").innerHTML =
+options;
+
+document.getElementById("returnProduct").innerHTML =
 options;
 
 }
@@ -460,196 +547,35 @@ options;
 
 window.deleteProduct = async function(id){
 
+if(confirm("Delete this product?")){
+
 await deleteDoc(doc(db,"products",id));
 
 loadProducts();
 
 loadDashboard();
 
+}
+
 };
 
 
 
-// SELL PRODUCT
+// SAVE SALE
 
-window.sellProduct = async function(){
+window.saveSale = async function(){
 
-const productName =
-document.getElementById("sellProduct").value;
+const productId =
+document.getElementById("productSelect").value;
 
 const qty =
-Number(document.getElementById("sellQty").value);
+Number(document.getElementById("saleQty").value);
 
-if(!productName || qty<=0){
+const productRef =
+doc(db,"products",productId);
 
-alert("Enter valid quantity");
+const productSnap =
+await getDoc(productRef);
 
-return;
-
-}
-
-const snapshot =
-await getDocs(collection(db,"products"));
-
-for (const docSnap of snapshot.docs){
-
-const data = docSnap.data();
-
-if(data.name === productName){
-
-if(data.stock < qty){
-
-alert("Not enough stock");
-
-return;
-
-}
-
-const newStock =
-data.stock - qty;
-
-await updateDoc(
-doc(db,"products",docSnap.id),
-{
-stock:newStock
-}
-);
-
-const total =
-data.sell * qty;
-
-const profit =
-(data.sell - data.buy) * qty;
-
-await addDoc(collection(db,"sales"),{
-
-product:productName,
-
-qty:qty,
-
-total:total,
-
-profit:profit,
-
-date:new Date().toISOString()
-
-});
-
-alert("Sale Completed");
-
-document.getElementById("sellQty").value = "";
-
-loadProducts();
-
-loadDashboard();
-
-loadReports();
-
-loadSalesReport();
-
-}
-
-}
-
-};
-
-
-
-// DASHBOARD
-
-async function loadDashboard(){
-
-const productSnapshot =
-await getDocs(collection(db,"products"));
-
-let totalStock = 0;
-
-productSnapshot.forEach((d)=>{
-
-const data = d.data();
-
-totalStock += Number(data.stock || 0);
-
-});
-
-document.getElementById("totalProducts").innerHTML =
-"Total Stock: " + totalStock;
-
-const salesSnapshot =
-await getDocs(collection(db,"sales"));
-
-let totalSales = 0;
-
-let totalProfit = 0;
-
-salesSnapshot.forEach((d)=>{
-
-const data = d.data();
-
-totalSales += Number(data.total || 0);
-
-totalProfit += Number(data.profit || 0);
-
-});
-
-document.getElementById("totalSales").innerHTML =
-"Total Sales: " + totalSales;
-
-document.getElementById("totalProfit").innerHTML =
-"Total Profit: " + totalProfit;
-
-}
-
-
-
-// DAILY & MONTHLY REPORT
-
-async function loadReports(){
-
-const snapshot =
-await getDocs(collection(db,"sales"));
-
-let dailySales = 0;
-
-let dailyProfit = 0;
-
-let monthlySales = 0;
-
-let monthlyProfit = 0;
-
-const today =
-new Date().toLocaleDateString();
-
-const currentMonth =
-new Date().getMonth();
-
-snapshot.forEach((d)=>{
-
-const data = d.data();
-
-const saleDate =
-new Date(data.date);
-
-if(saleDate.toLocaleDateString() === today){
-
-dailySales += Number(data.total || 0);
-
-dailyProfit += Number(data.profit || 0);
-
-}
-
-if(saleDate.getMonth() === currentMonth){
-
-monthlySales += Number(data.total || 0);
-
-monthlyProfit += Number(data.profit || 0);
-
-}
-
-});
-
-document.getElementById("dailySales").innerHTML =
-"Daily Sales: " + dailySales;
-
-document.getElementById("dailyProfit").innerHTML =
-"
+const productData =
+productSnap
