@@ -210,11 +210,11 @@ Logout
 
 </div>
 
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 
 <div class="mainContent">
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD PAGE -->
 
 <div id="dashboardPage" class="page activePage">
 
@@ -232,7 +232,7 @@ Total Stock: 0
 
 </div>
 
-<!-- PRODUCTS -->
+<!-- PRODUCT PAGE -->
 
 <div id="productPage" class="page">
 
@@ -264,7 +264,7 @@ Add Product
 
 </div>
 
-<!-- PURCHASE -->
+<!-- PURCHASE PAGE -->
 
 <div id="purchasePage" class="page">
 
@@ -294,7 +294,7 @@ Add Stock
 
 </div>
 
-<!-- SALES -->
+<!-- SALES PAGE -->
 
 <div id="salesPage" class="page">
 
@@ -303,6 +303,10 @@ Add Stock
 <h2>Sales Entry</h2>
 
 <input type="text" id="customerName" placeholder="Customer Name">
+
+<select id="salesOfficer">
+<option value="">Select Officer</option>
+</select>
 
 <select id="orderProduct">
 <option value="">Select Product</option>
@@ -326,7 +330,7 @@ Save Sale
 
 </div>
 
-<!-- RETURN -->
+<!-- RETURN PAGE -->
 
 <div id="returnPage" class="page">
 
@@ -356,7 +360,7 @@ Return Product
 
 </div>
 
-<!-- REPORT -->
+<!-- REPORT PAGE -->
 
 <div id="reportPage" class="page">
 
@@ -449,7 +453,7 @@ signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* FIREBASE CONFIG */
+/* FIREBASE */
 
 const firebaseConfig = {
 
@@ -489,31 +493,6 @@ document.getElementById(pageId)
 
 }
 
-/* AUTO LOGIN */
-
-onAuthStateChanged(auth,(user)=>{
-
-if(user){
-
-document.getElementById("loginPage")
-.style.display = "none";
-
-document.getElementById("dashboard")
-.style.display = "block";
-
-loadProducts();
-loadPurchases();
-loadOrders();
-loadReturns();
-loadStockHistory();
-loadDashboard();
-loadSalesReports();
-loadOfficers();
-
-}
-
-});
-
 /* LOGIN */
 
 window.login = async function(){
@@ -542,6 +521,32 @@ alert(error.message);
 
 };
 
+/* AUTO LOGIN */
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("loginPage")
+.style.display = "none";
+
+document.getElementById("dashboard")
+.style.display = "block";
+
+loadProducts();
+loadPurchases();
+loadOrders();
+loadReturns();
+loadStockHistory();
+loadDashboard();
+loadSalesReports();
+loadOfficers();
+loadOfficerOptions();
+
+}
+
+});
+
 /* LOGOUT */
 
 window.logout = async function(){
@@ -566,6 +571,7 @@ loadStockHistory();
 loadDashboard();
 loadSalesReports();
 loadOfficers();
+loadOfficerOptions();
 
 alert("Data Refreshed");
 
@@ -705,13 +711,21 @@ window.saveOrder = async function(){
 const customer =
 document.getElementById("customerName").value;
 
+const officer =
+document.getElementById("salesOfficer").value;
+
 const productId =
 document.getElementById("orderProduct").value;
 
 const qty =
 Number(document.getElementById("orderQty").value);
 
-if(!customer || !productId || qty <= 0){
+if(
+!customer ||
+!officer ||
+!productId ||
+qty <= 0
+){
 
 alert("Enter Correct Data");
 return;
@@ -739,11 +753,14 @@ stock:Number(data.stock) - qty
 });
 
 await addDoc(collection(db,"orders"),{
+
 customer,
+officer,
 product:data.name,
 productId,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 await addStockHistory(
@@ -760,7 +777,7 @@ loadStockHistory();
 loadDashboard();
 loadSalesReports();
 
-};
+}
 
 /* RETURN */
 
@@ -842,6 +859,7 @@ date:new Date().toLocaleString()
 alert("Officer Added");
 
 loadOfficers();
+loadOfficerOptions();
 
 }
 
@@ -921,6 +939,26 @@ document.getElementById("returnProduct")
 
 }
 
+/* DELETE PRODUCT */
+
+window.deleteProduct = async function(id){
+
+const ok =
+confirm("Delete Product?");
+
+if(!ok){
+return;
+}
+
+await deleteDoc(doc(db,"products",id));
+
+alert("Product Deleted");
+
+loadProducts();
+loadDashboard();
+
+}
+
 /* LOAD PURCHASES */
 
 async function loadPurchases(){
@@ -959,6 +997,35 @@ document.getElementById("purchaseList")
 
 }
 
+/* LOAD OFFICER OPTIONS */
+
+async function loadOfficerOptions(){
+
+const snapshot =
+await getDocs(collection(db,"officers"));
+
+let options =
+'<option value="">Select Officer</option>';
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+options += `
+
+<option value="${data.name}">
+${data.name}
+</option>
+
+`;
+
+});
+
+document.getElementById("salesOfficer")
+.innerHTML = options;
+
+}
+
 /* LOAD ORDERS */
 
 async function loadOrders(){
@@ -980,6 +1047,10 @@ Customer: ${data.customer}
 
 <br>
 
+Officer: ${data.officer || 'N/A'}
+
+<br>
+
 Product: ${data.product}
 
 <br>
@@ -990,6 +1061,21 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOrder(
+'${docSnap.id}',
+'${data.productId}',
+${data.qty}
+)"
+>
+
+Delete Order
+
+</button>
+
 </div>
 
 `;
@@ -998,6 +1084,42 @@ Date: ${data.date}
 
 document.getElementById("orderList")
 .innerHTML = html;
+
+}
+
+/* DELETE ORDER */
+
+window.deleteOrder =
+async function(orderId,productId,qty){
+
+const ok =
+confirm("Delete Order?");
+
+if(!ok){
+return;
+}
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const data =
+productSnap.data();
+
+await updateDoc(productRef,{
+stock:Number(data.stock) + Number(qty)
+});
+
+await deleteDoc(doc(db,"orders",orderId));
+
+alert("Order Deleted");
+
+loadOrders();
+loadProducts();
+loadDashboard();
+loadSalesReports();
 
 }
 
@@ -1100,6 +1222,7 @@ await deleteDoc(doc(db,"officers",id));
 alert("Officer Deleted");
 
 loadOfficers();
+loadOfficerOptions();
 
 }
 
