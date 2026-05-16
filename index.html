@@ -337,4 +337,571 @@ const auth = getAuth(app);
 
 // AUTO LOGIN
 
-onAuthStateChanged(auth,(user
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("loginPage").style.display =
+"none";
+
+document.getElementById("dashboard").style.display =
+"block";
+
+loadProducts();
+
+loadSales();
+
+loadReturns();
+
+loadDashboard();
+
+loadReports();
+
+}
+
+});
+
+
+
+// LOGIN
+
+window.login = async function(){
+
+console.log("Login Clicked");
+
+const email =
+document.getElementById("email").value;
+
+const password =
+document.getElementById("password").value;
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+alert("Login Successful");
+
+document.getElementById("loginPage").style.display =
+"none";
+
+document.getElementById("dashboard").style.display =
+"block";
+
+loadProducts();
+
+loadSales();
+
+loadReturns();
+
+loadDashboard();
+
+loadReports();
+
+}catch(error){
+
+alert(error.message);
+
+console.log(error);
+
+}
+
+};
+
+
+
+// SAVE PURCHASE
+
+window.savePurchase = async function(){
+
+const name =
+document.getElementById("purchaseName").value;
+
+const buyPrice =
+Number(document.getElementById("buyPrice").value);
+
+const sellPrice =
+Number(document.getElementById("sellPrice").value);
+
+const qty =
+Number(document.getElementById("purchaseQty").value);
+
+if(!name || qty<=0){
+
+alert("Enter valid data");
+
+return;
+
+}
+
+await addDoc(collection(db,"products"),{
+
+name,
+buyPrice,
+sellPrice,
+stock: qty
+
+});
+
+alert("Purchase Saved");
+
+document.getElementById("purchaseName").value = "";
+
+document.getElementById("buyPrice").value = "";
+
+document.getElementById("sellPrice").value = "";
+
+document.getElementById("purchaseQty").value = "";
+
+loadProducts();
+
+loadDashboard();
+
+};
+
+
+
+// LOAD PRODUCTS
+
+async function loadProducts(){
+
+const querySnapshot =
+await getDocs(collection(db,"products"));
+
+let html = "";
+
+let options =
+"<option>Select Product</option>";
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+<div class="item">
+
+<b>${data.name}</b>
+
+<br><br>
+
+Buy Price: ${data.buyPrice}
+
+<br>
+
+Sell Price: ${data.sellPrice}
+
+<br>
+
+Stock: ${data.stock}
+
+<br>
+
+${data.stock <= 5
+? '<span class="lowStock">⚠️ Low Stock</span>'
+: ''
+}
+
+<br><br>
+
+<button onclick="deleteProduct('${docSnap.id}')">
+Delete
+</button>
+
+</div>
+`;
+
+options += `
+<option value="${docSnap.id}">
+${data.name}
+</option>
+`;
+
+});
+
+document.getElementById("productList").innerHTML =
+html;
+
+document.getElementById("productSelect").innerHTML =
+options;
+
+document.getElementById("returnProduct").innerHTML =
+options;
+
+}
+
+
+
+// DELETE PRODUCT
+
+window.deleteProduct = async function(id){
+
+if(confirm("Delete this product?")){
+
+await deleteDoc(doc(db,"products",id));
+
+loadProducts();
+
+loadDashboard();
+
+}
+
+};
+
+
+
+// SAVE SALE
+
+window.saveSale = async function(){
+
+const productId =
+document.getElementById("productSelect").value;
+
+const qty =
+Number(document.getElementById("saleQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+if(productData.stock < qty){
+
+alert("Not Enough Stock");
+
+return;
+
+}
+
+await updateDoc(productRef,{
+
+stock: productData.stock - qty
+
+});
+
+const profit =
+(productData.sellPrice - productData.buyPrice)
+* qty;
+
+await addDoc(collection(db,"sales"),{
+
+product: productData.name,
+
+qty,
+
+profit,
+
+date:new Date().toLocaleString()
+
+});
+
+alert("Sale Saved");
+
+document.getElementById("saleQty").value = "";
+
+loadProducts();
+
+loadSales();
+
+loadDashboard();
+
+loadReports();
+
+};
+
+
+
+// RETURN PRODUCT
+
+window.returnProductFunc = async function(){
+
+const productId =
+document.getElementById("returnProduct").value;
+
+const qty =
+Number(document.getElementById("returnQty").value);
+
+const productRef =
+doc(db,"products",productId);
+
+const productSnap =
+await getDoc(productRef);
+
+const productData =
+productSnap.data();
+
+await updateDoc(productRef,{
+
+stock: productData.stock + qty
+
+});
+
+await addDoc(collection(db,"returns"),{
+
+product: productData.name,
+
+qty,
+
+date:new Date().toLocaleString()
+
+});
+
+alert("Return Saved");
+
+document.getElementById("returnQty").value = "";
+
+loadProducts();
+
+loadReturns();
+
+loadDashboard();
+
+};
+
+
+
+// LOAD SALES
+
+async function loadSales(){
+
+const querySnapshot =
+await getDocs(collection(db,"sales"));
+
+let html = "";
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+<div class="item">
+
+<b>${data.product}</b>
+
+<br>
+
+Qty: ${data.qty}
+
+<br>
+
+Profit: ${data.profit}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+`;
+
+});
+
+document.getElementById("salesList").innerHTML =
+html;
+
+}
+
+
+
+// LOAD RETURNS
+
+async function loadReturns(){
+
+const querySnapshot =
+await getDocs(collection(db,"returns"));
+
+let html = "";
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+<div class="item">
+
+<b>${data.product}</b>
+
+<br>
+
+Return Qty: ${data.qty}
+
+<br>
+
+Date: ${data.date}
+
+</div>
+`;
+
+});
+
+document.getElementById("returnList").innerHTML =
+html;
+
+}
+
+
+
+// DASHBOARD
+
+async function loadDashboard(){
+
+const productSnapshot =
+await getDocs(collection(db,"products"));
+
+const salesSnapshot =
+await getDocs(collection(db,"sales"));
+
+let totalProducts = 0;
+
+let totalSales = 0;
+
+let totalProfit = 0;
+
+productSnapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+totalProducts += data.stock || 0;
+
+});
+
+salesSnapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+totalSales += data.qty || 0;
+
+totalProfit += data.profit || 0;
+
+});
+
+document.getElementById("totalProducts").innerHTML =
+"Total Stock: " + totalProducts;
+
+document.getElementById("totalSales").innerHTML =
+"Total Sales: " + totalSales;
+
+document.getElementById("totalProfit").innerHTML =
+"Total Profit: " + totalProfit;
+
+}
+
+
+
+// DAILY MONTHLY REPORT
+
+async function loadReports(){
+
+const snapshot =
+await getDocs(collection(db,"sales"));
+
+let dailySales = 0;
+
+let dailyProfit = 0;
+
+let monthlySales = 0;
+
+let monthlyProfit = 0;
+
+const today =
+new Date().toLocaleDateString();
+
+const currentMonth =
+new Date().getMonth();
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const saleDate =
+new Date(data.date);
+
+if(
+saleDate.toLocaleDateString() === today
+){
+
+dailySales += Number(data.qty || 0);
+
+dailyProfit += Number(data.profit || 0);
+
+}
+
+if(
+saleDate.getMonth() === currentMonth
+){
+
+monthlySales += Number(data.qty || 0);
+
+monthlyProfit += Number(data.profit || 0);
+
+}
+
+});
+
+document.getElementById("dailySales").innerHTML =
+"Daily Sales: " + dailySales;
+
+document.getElementById("dailyProfit").innerHTML =
+"Daily Profit: " + dailyProfit;
+
+document.getElementById("monthlySales").innerHTML =
+"Monthly Sales: " + monthlySales;
+
+document.getElementById("monthlyProfit").innerHTML =
+"Monthly Profit: " + monthlyProfit;
+
+}
+
+
+
+// SEARCH PRODUCT
+
+window.searchProduct = function(){
+
+const input =
+document.getElementById("searchInput")
+.value
+.toLowerCase();
+
+const items =
+document.querySelectorAll(".item");
+
+items.forEach((item)=>{
+
+if(
+item.innerText.toLowerCase()
+.includes(input)
+){
+
+item.style.display = "block";
+
+}else{
+
+item.style.display = "none";
+
+}
+
+});
+
+};
+
+
+
+// PDF
+
+window.downloadPDF = function(){
+
+window.print();
+
+};
+
+</script>
+
+</body>
+
+</html>
