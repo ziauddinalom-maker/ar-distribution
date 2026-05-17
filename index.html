@@ -22,6 +22,8 @@ background:#f5f5f5;
 display:none;
 }
 
+/* LOGIN */
+
 .loginBox{
 background:white;
 padding:20px;
@@ -30,6 +32,8 @@ max-width:400px;
 margin:50px auto;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
+
+/* SIDEBAR */
 
 .sidebar{
 position:fixed;
@@ -59,6 +63,8 @@ border-radius:8px;
 font-weight:bold;
 cursor:pointer;
 }
+
+/* MAIN */
 
 .mainContent{
 margin-left:250px;
@@ -138,8 +144,14 @@ margin-bottom:10px;
 color:#0d6efd;
 }
 
-.searchBox{
-margin-bottom:20px;
+.mapBtn{
+display:inline-block;
+padding:8px 12px;
+background:#198754;
+color:white;
+text-decoration:none;
+border-radius:5px;
+margin-top:10px;
 }
 
 @media(max-width:768px){
@@ -183,41 +195,55 @@ Login
 
 <div id="dashboard">
 
+<!-- SIDEBAR -->
+
 <div class="sidebar">
 
 <h2>AR Distribution</h2>
 
-<button onclick="showPage('dashboardPage')">Dashboard</button>
+<button onclick="showPage('dashboardPage')">
+Dashboard
+</button>
 
-<button onclick="showPage('productPage')">Products</button>
+<button onclick="showPage('productPage')">
+Products
+</button>
 
-<button onclick="showPage('purchasePage')">Purchase</button>
+<button onclick="showPage('purchasePage')">
+Purchase
+</button>
 
-<button onclick="showPage('salesPage')">Sales</button>
+<button onclick="showPage('salesPage')">
+Sales
+</button>
 
-<button onclick="showPage('returnPage')">Returns</button>
+<button onclick="showPage('returnPage')">
+Returns
+</button>
 
-<button onclick="showPage('reportPage')">Reports</button>
+<button onclick="showPage('reportPage')">
+Reports
+</button>
 
-<button onclick="showPage('officerPage')">Officers</button>
+<button onclick="showPage('officerPage')">
+Officers
+</button>
 
-<button onclick="refreshData()">Refresh Data</button>
+<button onclick="refreshData()">
+Refresh Data
+</button>
 
-<button onclick="logout()">Logout</button>
+<button onclick="logout()">
+Logout
+</button>
 
 </div>
 
+<!-- MAIN -->
+
 <div class="mainContent">
 
-<input
-type="text"
-class="searchBox"
-id="searchInput"
-placeholder="Search Product..."
-onkeyup="searchProducts()"
-/>
-
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 
 <div id="dashboardPage" class="page activePage">
 
@@ -246,21 +272,6 @@ onkeyup="searchProducts()"
 <div class="dashboardCard">
 <h3>Monthly Sales</h3>
 <p id="monthlySalesCard">0</p>
-</div>
-
-<div class="dashboardCard">
-<h3>Total Working Day</h3>
-<p id="workingDays">0</p>
-</div>
-
-<div class="dashboardCard">
-<h3>Remaining Day</h3>
-<p id="remainingDays">0</p>
-</div>
-
-<div class="dashboardCard">
-<h3>Total Target</h3>
-<p id="totalTarget">500</p>
 </div>
 
 </div>
@@ -415,14 +426,6 @@ Monthly Sales Qty: 0
 
 </div>
 
-<div class="box">
-
-<h2>Stock History</h2>
-
-<div id="stockHistoryList"></div>
-
-</div>
-
 </div>
 
 <!-- OFFICER -->
@@ -454,7 +457,6 @@ Save Officer
 </div>
 
 </div>
-
 </div>
 
 <script type="module">
@@ -484,13 +486,22 @@ signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+/* FIREBASE */
+
 const firebaseConfig = {
+
 apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+
 authDomain: "ar-distribution-ca285.firebaseapp.com",
+
 projectId: "ar-distribution-ca285",
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
+
+storageBucket: "ar-distribution-ca285.appspot.com",
+
 messagingSenderId: "668942550210",
+
 appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+
 };
 
 const app = initializeApp(firebaseConfig);
@@ -574,54 +585,18 @@ location.reload();
 window.refreshData = function(){
 
 loadProducts();
+
 loadPurchases();
+
 loadOrders();
+
 loadReturns();
+
 loadReports();
-loadDashboard();
+
 loadOfficers();
+
 loadOfficerOptions();
-loadStockHistory();
-
-}
-
-/* SEARCH */
-
-window.searchProducts = function(){
-
-const input =
-document.getElementById("searchInput")
-.value.toLowerCase();
-
-const items =
-document.querySelectorAll("#productList .item");
-
-items.forEach(item=>{
-
-if(item.innerText.toLowerCase().includes(input)){
-
-item.style.display = "block";
-
-}else{
-
-item.style.display = "none";
-
-}
-
-});
-
-}
-
-/* STOCK HISTORY */
-
-async function addStockHistory(type,product,qty){
-
-await addDoc(collection(db,"stockHistory"),{
-type,
-product,
-qty,
-date:new Date().toLocaleString()
-});
 
 }
 
@@ -653,19 +628,13 @@ sellPrice,
 stock
 });
 
-await addStockHistory(
-"Opening Stock",
-name,
-stock
-);
-
 alert("Product Added");
 
 refreshData();
 
 }
 
-/* LOAD PRODUCTS */
+/* LOAD PRODUCT */
 
 async function loadProducts(){
 
@@ -679,29 +648,14 @@ let options =
 
 let totalStock = 0;
 
-let lowHtml = "";
-
 snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
 totalStock += Number(data.stock || 0);
 
-if(data.stock <= 5){
-
-lowHtml += `
-<div class="item">
-${data.name}
-:
-<span class="lowStock">
-${data.stock}
-</span>
-</div>
-`;
-
-}
-
 html += `
+
 <div class="item">
 
 <b>${data.name}</b>
@@ -717,11 +671,19 @@ Sell Price: ${data.sellPrice}
 <br>
 
 Stock:
-<span class="${data.stock <= 5 ? 'lowStock' : ''}">
 ${data.stock}
-</span>
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteProduct('${docSnap.id}')"
+>
+Delete Product
+</button>
 
 </div>
+
 `;
 
 options += `
@@ -750,8 +712,17 @@ document.getElementById("totalStock")
 document.getElementById("totalProduct")
 .innerHTML = snapshot.size;
 
-document.getElementById("lowStockList")
-.innerHTML = lowHtml || "No Low Stock";
+}
+
+/* DELETE PRODUCT */
+
+window.deleteProduct = async function(id){
+
+await deleteDoc(doc(db,"products",id));
+
+alert("Deleted");
+
+refreshData();
 
 }
 
@@ -764,11 +735,6 @@ document.getElementById("purchaseProduct").value;
 
 const qty =
 Number(document.getElementById("purchaseQty").value);
-
-if(!productId || qty<=0){
-alert("Enter Correct Data");
-return;
-}
 
 const productRef =
 doc(db,"products",productId);
@@ -809,6 +775,7 @@ snapshot.forEach((docSnap)=>{
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
 Product: ${data.product}
@@ -822,6 +789,7 @@ Qty: ${data.qty}
 Date: ${data.date}
 
 </div>
+
 `;
 
 });
@@ -831,7 +799,7 @@ document.getElementById("purchaseList")
 
 }
 
-/* SALES */
+/* SALES WITH LOCATION */
 
 window.saveOrder = async function(){
 
@@ -857,6 +825,14 @@ alert("Enter Correct Data");
 return;
 }
 
+navigator.geolocation.getCurrentPosition(
+
+async(position)=>{
+
+const latitude = position.coords.latitude;
+
+const longitude = position.coords.longitude;
+
 const productRef =
 doc(db,"products",productId);
 
@@ -879,13 +855,24 @@ await addDoc(collection(db,"orders"),{
 customer,
 officer,
 product:data.name,
+productId,
 qty,
+latitude,
+longitude,
 date:new Date().toLocaleString()
 });
 
 alert("Sale Saved");
 
 refreshData();
+
+},
+
+(error)=>{
+alert("Location Permission Denied");
+}
+
+);
 
 }
 
@@ -898,12 +885,7 @@ await getDocs(collection(db,"orders"));
 
 let html = "";
 
-let todayQty = 0;
-
 let totalQty = 0;
-
-const today =
-new Date().toLocaleDateString();
 
 snapshot.forEach((docSnap)=>{
 
@@ -911,15 +893,8 @@ const data = docSnap.data();
 
 totalQty += Number(data.qty || 0);
 
-const orderDate =
-new Date(data.date)
-.toLocaleDateString();
-
-if(orderDate === today){
-todayQty += Number(data.qty || 0);
-}
-
 html += `
+
 <div class="item">
 
 Customer: ${data.customer}
@@ -940,7 +915,29 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
+<br><br>
+
+<a class="mapBtn"
+target="_blank"
+href="https://maps.google.com/?q=${data.latitude},${data.longitude}">
+View Location
+</a>
+
+<br><br>
+
+<button
+class="actionBtn deleteBtn"
+onclick="deleteOrder(
+'${docSnap.id}',
+'${data.productId}',
+${data.qty}
+)"
+>
+Delete Order
+</button>
+
 </div>
+
 `;
 
 });
@@ -948,14 +945,37 @@ Date: ${data.date}
 document.getElementById("orderList")
 .innerHTML = html;
 
-document.getElementById("todayOrder")
-.innerHTML = todayQty;
-
 document.getElementById("cumulativeOrder")
 .innerHTML = totalQty;
 
 document.getElementById("monthlySalesCard")
 .innerHTML = totalQty;
+
+}
+
+/* DELETE ORDER */
+
+window.deleteOrder =
+async function(orderId,productId,qty){
+
+const productRef =
+doc(db,"products",productId);
+
+const snap =
+await getDoc(productRef);
+
+const data =
+snap.data();
+
+await updateDoc(productRef,{
+stock:Number(data.stock)+Number(qty)
+});
+
+await deleteDoc(doc(db,"orders",orderId));
+
+alert("Order Deleted");
+
+refreshData();
 
 }
 
@@ -968,11 +988,6 @@ document.getElementById("returnProduct").value;
 
 const qty =
 Number(document.getElementById("returnQty").value);
-
-if(!productId || qty<=0){
-alert("Enter Correct Data");
-return;
-}
 
 const productRef =
 doc(db,"products",productId);
@@ -1013,6 +1028,7 @@ snapshot.forEach((docSnap)=>{
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
 Product: ${data.product}
@@ -1026,6 +1042,7 @@ Qty: ${data.qty}
 Date: ${data.date}
 
 </div>
+
 `;
 
 });
@@ -1044,73 +1061,17 @@ await getDocs(collection(db,"orders"));
 
 let daily = 0;
 
-let monthly = 0;
-
-const now = new Date();
-
-const today =
-now.toLocaleDateString();
-
-const month =
-now.getMonth();
-
-const year =
-now.getFullYear();
-
 snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-const qty =
-Number(data.qty || 0);
-
-const date =
-new Date(data.date);
-
-if(date.toLocaleDateString()===today){
-daily += qty;
-}
-
-if(
-date.getMonth()===month &&
-date.getFullYear()===year
-){
-monthly += qty;
-}
+daily += Number(data.qty || 0);
 
 });
 
 document.getElementById("dailySales")
 .innerHTML =
 "Today's Sales Qty: " + daily;
-
-document.getElementById("monthlySalesReport")
-.innerHTML =
-"Monthly Sales Qty: " + monthly;
-
-}
-
-/* DASHBOARD */
-
-async function loadDashboard(){
-
-const now = new Date();
-
-const totalDays =
-new Date(
-now.getFullYear(),
-now.getMonth()+1,
-0
-).getDate();
-
-const today =
-now.getDate();
-
-document.getElementById("workingDays")
-.innerHTML = totalDays;
-
-document.getElementById("remainingDays")
-.innerHTML = totalDays - today;
 
 }
 
@@ -1124,15 +1085,9 @@ document.getElementById("officerName").value;
 const email =
 document.getElementById("officerEmail").value;
 
-if(!name || !email){
-alert("Enter Correct Data");
-return;
-}
-
 await addDoc(collection(db,"officers"),{
 name,
-email,
-date:new Date().toLocaleString()
+email
 });
 
 alert("Officer Added");
@@ -1155,15 +1110,17 @@ snapshot.forEach((docSnap)=>{
 const data = docSnap.data();
 
 html += `
+
 <div class="item">
 
-Officer Name: ${data.name}
+Officer: ${data.name}
 
 <br>
 
-Officer Email: ${data.email}
+Email: ${data.email}
 
 </div>
+
 `;
 
 });
@@ -1203,4 +1160,4 @@ document.getElementById("salesOfficer")
 </script>
 
 </body>
-  </html>
+</html>
