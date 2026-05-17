@@ -144,13 +144,18 @@ margin-bottom:10px;
 color:#0d6efd;
 }
 
-.mapBtn{
-display:inline-block;
-padding:8px 12px;
-background:#198754;
-color:white;
-text-decoration:none;
-border-radius:5px;
+.locationBox{
+padding:10px;
+background:#eef5ff;
+border-radius:8px;
+margin-top:10px;
+}
+
+iframe{
+width:100%;
+height:300px;
+border:none;
+border-radius:10px;
 margin-top:10px;
 }
 
@@ -227,6 +232,10 @@ Reports
 
 <button onclick="showPage('officerPage')">
 Officers
+</button>
+
+<button onclick="showPage('locationPage')">
+Live Location
 </button>
 
 <button onclick="refreshData()">
@@ -414,15 +423,11 @@ Save Return
 
 <h2>Reports</h2>
 
-<p id="dailySales">
-Today's Sales Qty: 0
-</p>
+<p id="dailySales">Today's Sales Qty: 0</p>
 
 <br>
 
-<p id="monthlySalesReport">
-Monthly Sales Qty: 0
-</p>
+<p id="monthlySalesReport">Monthly Sales Qty: 0</p>
 
 </div>
 
@@ -456,7 +461,22 @@ Save Officer
 
 </div>
 
+<!-- LOCATION -->
+
+<div id="locationPage" class="page">
+
+<div class="box">
+
+<h2>Live Officer Location</h2>
+
+<div id="locationList"></div>
+
 </div>
+
+</div>
+
+</div>
+
 </div>
 
 <script type="module">
@@ -491,15 +511,10 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
 
 apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
-
 authDomain: "ar-distribution-ca285.firebaseapp.com",
-
 projectId: "ar-distribution-ca285",
-
-storageBucket: "ar-distribution-ca285.appspot.com",
-
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
 messagingSenderId: "668942550210",
-
 appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 
 };
@@ -544,6 +559,8 @@ password
 
 alert("Login Successful");
 
+saveLiveLocation(email);
+
 }catch(error){
 
 alert(error.message);
@@ -566,6 +583,8 @@ document.getElementById("dashboard")
 
 refreshData();
 
+saveLiveLocation(user.email);
+
 }
 
 });
@@ -580,27 +599,98 @@ location.reload();
 
 }
 
+/* LOCATION SAVE */
+
+async function saveLiveLocation(userEmail){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(
+async(position)=>{
+
+const lat = position.coords.latitude;
+const lng = position.coords.longitude;
+
+await addDoc(collection(db,"locations"),{
+
+email:userEmail,
+lat,
+lng,
+time:new Date().toLocaleString()
+
+});
+
+loadLocations();
+
+}
+);
+
+}
+
+}
+
+/* LOAD LOCATION */
+
+async function loadLocations(){
+
+const snapshot =
+await getDocs(collection(db,"locations"));
+
+let html = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+html += `
+
+<div class="locationBox">
+
+<b>${data.email}</b>
+
+<br><br>
+
+Latitude: ${data.lat}
+
+<br>
+
+Longitude: ${data.lng}
+
+<br>
+
+Time: ${data.time}
+
+<iframe
+src="https://maps.google.com/maps?q=${data.lat},${data.lng}&z=15&output=embed">
+</iframe>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("locationList")
+.innerHTML = html;
+
+}
+
 /* REFRESH */
 
 window.refreshData = function(){
 
 loadProducts();
-
 loadPurchases();
-
 loadOrders();
-
 loadReturns();
-
 loadReports();
-
 loadOfficers();
-
 loadOfficerOptions();
+loadLocations();
 
 }
 
-/* ADD PRODUCT */
+/* PRODUCT */
 
 window.addNewProduct = async function(){
 
@@ -616,16 +706,13 @@ Number(document.getElementById("newSellPrice").value);
 const stock =
 Number(document.getElementById("openingStock").value);
 
-if(!name){
-alert("Enter Product Name");
-return;
-}
-
 await addDoc(collection(db,"products"),{
+
 name,
 buyPrice,
 sellPrice,
 stock
+
 });
 
 alert("Product Added");
@@ -670,17 +757,7 @@ Sell Price: ${data.sellPrice}
 
 <br>
 
-Stock:
-${data.stock}
-
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteProduct('${docSnap.id}')"
->
-Delete Product
-</button>
+Stock: ${data.stock}
 
 </div>
 
@@ -714,18 +791,6 @@ document.getElementById("totalProduct")
 
 }
 
-/* DELETE PRODUCT */
-
-window.deleteProduct = async function(id){
-
-await deleteDoc(doc(db,"products",id));
-
-alert("Deleted");
-
-refreshData();
-
-}
-
 /* PURCHASE */
 
 window.savePurchase = async function(){
@@ -750,9 +815,11 @@ stock:Number(data.stock)+qty
 });
 
 await addDoc(collection(db,"purchases"),{
+
 product:data.name,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 alert("Purchase Saved");
@@ -799,7 +866,7 @@ document.getElementById("purchaseList")
 
 }
 
-/* SALES WITH LOCATION */
+/* SALES */
 
 window.saveOrder = async function(){
 
@@ -815,24 +882,6 @@ document.getElementById("orderProduct").value;
 const qty =
 Number(document.getElementById("orderQty").value);
 
-if(
-!customer ||
-!officer ||
-!productId ||
-qty<=0
-){
-alert("Enter Correct Data");
-return;
-}
-
-navigator.geolocation.getCurrentPosition(
-
-async(position)=>{
-
-const latitude = position.coords.latitude;
-
-const longitude = position.coords.longitude;
-
 const productRef =
 doc(db,"products",productId);
 
@@ -843,8 +892,10 @@ const data =
 snap.data();
 
 if(data.stock < qty){
+
 alert("Not Enough Stock");
 return;
+
 }
 
 await updateDoc(productRef,{
@@ -852,27 +903,18 @@ stock:Number(data.stock)-qty
 });
 
 await addDoc(collection(db,"orders"),{
+
 customer,
 officer,
 product:data.name,
-productId,
 qty,
-latitude,
-longitude,
 date:new Date().toLocaleString()
+
 });
 
 alert("Sale Saved");
 
 refreshData();
-
-},
-
-(error)=>{
-alert("Location Permission Denied");
-}
-
-);
 
 }
 
@@ -915,27 +957,6 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
-<br><br>
-
-<a class="mapBtn"
-target="_blank"
-href="https://maps.google.com/?q=${data.latitude},${data.longitude}">
-View Location
-</a>
-
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteOrder(
-'${docSnap.id}',
-'${data.productId}',
-${data.qty}
-)"
->
-Delete Order
-</button>
-
 </div>
 
 `;
@@ -950,32 +971,6 @@ document.getElementById("cumulativeOrder")
 
 document.getElementById("monthlySalesCard")
 .innerHTML = totalQty;
-
-}
-
-/* DELETE ORDER */
-
-window.deleteOrder =
-async function(orderId,productId,qty){
-
-const productRef =
-doc(db,"products",productId);
-
-const snap =
-await getDoc(productRef);
-
-const data =
-snap.data();
-
-await updateDoc(productRef,{
-stock:Number(data.stock)+Number(qty)
-});
-
-await deleteDoc(doc(db,"orders",orderId));
-
-alert("Order Deleted");
-
-refreshData();
 
 }
 
@@ -1003,9 +998,11 @@ stock:Number(data.stock)+qty
 });
 
 await addDoc(collection(db,"returns"),{
+
 product:data.name,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 alert("Return Saved");
@@ -1073,6 +1070,10 @@ document.getElementById("dailySales")
 .innerHTML =
 "Today's Sales Qty: " + daily;
 
+document.getElementById("monthlySalesReport")
+.innerHTML =
+"Monthly Sales Qty: " + daily;
+
 }
 
 /* OFFICER */
@@ -1086,8 +1087,10 @@ const email =
 document.getElementById("officerEmail").value;
 
 await addDoc(collection(db,"officers"),{
+
 name,
 email
+
 });
 
 alert("Officer Added");
@@ -1113,11 +1116,11 @@ html += `
 
 <div class="item">
 
-Officer: ${data.name}
+Officer Name: ${data.name}
 
 <br>
 
-Email: ${data.email}
+Officer Email: ${data.email}
 
 </div>
 
@@ -1160,4 +1163,4 @@ document.getElementById("salesOfficer")
 </script>
 
 </body>
-</html>
+  </html>
