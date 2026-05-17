@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AR Distribution Full System</title>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -21,7 +22,6 @@ background:#f5f5f5;
 display:none;
 }
 
-/* LOGIN */
 .loginBox{
 background:white;
 padding:20px;
@@ -31,12 +31,6 @@ margin:50px auto;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-.loginBox h2{
-margin-bottom:20px;
-text-align:center;
-}
-
-/* SIDEBAR */
 .sidebar{
 position:fixed;
 left:0;
@@ -66,7 +60,6 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* MAIN */
 .mainContent{
 margin-left:250px;
 padding:20px;
@@ -145,18 +138,8 @@ margin-bottom:10px;
 color:#0d6efd;
 }
 
-.topBar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-gap:10px;
-flex-wrap:wrap;
-}
-
 .searchBox{
-max-width:300px;
-width:100%;
+margin-bottom:20px;
 }
 
 @media(max-width:768px){
@@ -172,19 +155,23 @@ margin-left:0;
 }
 
 }
+
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
+
 <div class="loginBox" id="loginPage">
 
-<h2>Admin Login</h2>
+<h2 style="text-align:center;margin-bottom:20px;">
+Admin Login
+</h2>
 
-<input type="email" id="email" placeholder="Email"/>
+<input type="email" id="email" placeholder="Email">
 
-<input type="password" id="password" placeholder="Password"/>
+<input type="password" id="password" placeholder="Password">
 
 <button class="actionBtn" onclick="login()">
 Login
@@ -193,56 +180,34 @@ Login
 </div>
 
 <!-- DASHBOARD -->
+
 <div id="dashboard">
 
-<!-- SIDEBAR -->
 <div class="sidebar">
 
 <h2>AR Distribution</h2>
 
-<button onclick="showPage('dashboardPage')">
-Dashboard
-</button>
+<button onclick="showPage('dashboardPage')">Dashboard</button>
 
-<button onclick="showPage('productPage')">
-Products
-</button>
+<button onclick="showPage('productPage')">Products</button>
 
-<button onclick="showPage('purchasePage')">
-Purchase
-</button>
+<button onclick="showPage('purchasePage')">Purchase</button>
 
-<button onclick="showPage('salesPage')">
-Sales
-</button>
+<button onclick="showPage('salesPage')">Sales</button>
 
-<button onclick="showPage('returnPage')">
-Returns
-</button>
+<button onclick="showPage('returnPage')">Returns</button>
 
-<button onclick="showPage('reportPage')">
-Reports
-</button>
+<button onclick="showPage('reportPage')">Reports</button>
 
-<button onclick="showPage('officerPage')">
-Officers
-</button>
+<button onclick="showPage('officerPage')">Officers</button>
 
-<button onclick="refreshData()">
-Refresh Data
-</button>
+<button onclick="refreshData()">Refresh Data</button>
 
-<button onclick="logout()">
-Logout
-</button>
+<button onclick="logout()">Logout</button>
 
 </div>
 
-<!-- MAIN -->
 <div class="mainContent">
-
-<div class="topBar">
-<h1>AR Distribution System</h1>
 
 <input
 type="text"
@@ -252,9 +217,8 @@ placeholder="Search Product..."
 onkeyup="searchProducts()"
 />
 
-</div>
+<!-- DASHBOARD PAGE -->
 
-<!-- DASHBOARD -->
 <div id="dashboardPage" class="page activePage">
 
 <div class="cardGrid">
@@ -312,19 +276,20 @@ onkeyup="searchProducts()"
 </div>
 
 <!-- PRODUCT -->
+
 <div id="productPage" class="page">
 
 <div class="box">
 
 <h2>Add Product</h2>
 
-<input type="text" id="newProductName" placeholder="Product Name"/>
+<input type="text" id="newProductName" placeholder="Product Name">
 
-<input type="number" id="newBuyPrice" placeholder="Buy Price"/>
+<input type="number" id="newBuyPrice" placeholder="Buy Price">
 
-<input type="number" id="newSellPrice" placeholder="Sell Price"/>
+<input type="number" id="newSellPrice" placeholder="Sell Price">
 
-<input type="number" id="openingStock" placeholder="Opening Stock"/>
+<input type="number" id="openingStock" placeholder="Opening Stock">
 
 <button class="actionBtn" onclick="addNewProduct()">
 Add Product
@@ -343,6 +308,7 @@ Add Product
 </div>
 
 <!-- PURCHASE -->
+
 <div id="purchasePage" class="page">
 
 <div class="box">
@@ -351,7 +317,7 @@ Add Product
 
 <select id="purchaseProduct"></select>
 
-<input type="number" id="purchaseQty" placeholder="Purchase Quantity"/>
+<input type="number" id="purchaseQty" placeholder="Purchase Quantity">
 
 <button class="actionBtn" onclick="savePurchase()">
 Save Purchase
@@ -370,19 +336,20 @@ Save Purchase
 </div>
 
 <!-- SALES -->
+
 <div id="salesPage" class="page">
 
 <div class="box">
 
 <h2>Sales Entry</h2>
 
-<input type="text" id="customerName" placeholder="Customer Name"/>
+<input type="text" id="customerName" placeholder="Customer Name">
 
 <select id="salesOfficer"></select>
 
 <select id="orderProduct"></select>
 
-<input type="number" id="orderQty" placeholder="Order Quantity"/>
+<input type="number" id="orderQty" placeholder="Order Quantity">
 
 <button class="actionBtn" onclick="saveOrder()">
 Save Sale
@@ -401,6 +368,7 @@ Save Sale
 </div>
 
 <!-- RETURN -->
+
 <div id="returnPage" class="page">
 
 <div class="box">
@@ -409,7 +377,7 @@ Save Sale
 
 <select id="returnProduct"></select>
 
-<input type="number" id="returnQty" placeholder="Return Quantity"/>
+<input type="number" id="returnQty" placeholder="Return Quantity">
 
 <button class="actionBtn" onclick="returnProductFunc()">
 Save Return
@@ -428,6 +396,7 @@ Save Return
 </div>
 
 <!-- REPORT -->
+
 <div id="reportPage" class="page">
 
 <div class="box">
@@ -457,15 +426,16 @@ Monthly Sales Qty: 0
 </div>
 
 <!-- OFFICER -->
+
 <div id="officerPage" class="page">
 
 <div class="box">
 
 <h2>Add Officer</h2>
 
-<input type="text" id="officerName" placeholder="Officer Name"/>
+<input type="text" id="officerName" placeholder="Officer Name">
 
-<input type="email" id="officerEmail" placeholder="Officer Email"/>
+<input type="email" id="officerEmail" placeholder="Officer Email">
 
 <button class="actionBtn" onclick="addOfficer()">
 Save Officer
@@ -514,22 +484,13 @@ signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* FIREBASE */
-
 const firebaseConfig = {
-
-apiKey: "YOUR_API_KEY",
-
-authDomain: "YOUR_AUTH_DOMAIN",
-
-projectId: "YOUR_PROJECT_ID",
-
-storageBucket: "YOUR_STORAGE_BUCKET",
-
-messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-
-appId: "YOUR_APP_ID"
-
+apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+authDomain: "ar-distribution-ca285.firebaseapp.com",
+projectId: "ar-distribution-ca285",
+storageBucket: "ar-distribution-ca285.firebasestorage.app",
+messagingSenderId: "668942550210",
+appId: "1:668942550210:web:4b1bccf00766a3c274275b"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -656,12 +617,10 @@ item.style.display = "none";
 async function addStockHistory(type,product,qty){
 
 await addDoc(collection(db,"stockHistory"),{
-
 type,
 product,
 qty,
 date:new Date().toLocaleString()
-
 });
 
 }
@@ -683,34 +642,15 @@ const stock =
 Number(document.getElementById("openingStock").value);
 
 if(!name){
-
 alert("Enter Product Name");
 return;
-
-}
-
-const q = query(
-collection(db,"products"),
-where("name","==",name)
-);
-
-const snapshot =
-await getDocs(q);
-
-if(!snapshot.empty){
-
-alert("Product Already Exists");
-return;
-
 }
 
 await addDoc(collection(db,"products"),{
-
 name,
 buyPrice,
 sellPrice,
 stock
-
 });
 
 await addStockHistory(
@@ -751,7 +691,8 @@ if(data.stock <= 5){
 
 lowHtml += `
 <div class="item">
-${data.name} :
+${data.name}
+:
 <span class="lowStock">
 ${data.stock}
 </span>
@@ -779,15 +720,6 @@ Stock:
 <span class="${data.stock <= 5 ? 'lowStock' : ''}">
 ${data.stock}
 </span>
-
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteProduct('${docSnap.id}')"
->
-Delete Product
-</button>
 
 </div>
 `;
@@ -823,23 +755,6 @@ document.getElementById("lowStockList")
 
 }
 
-/* DELETE PRODUCT */
-
-window.deleteProduct = async function(id){
-
-const ok =
-confirm("Delete Product?");
-
-if(!ok) return;
-
-await deleteDoc(doc(db,"products",id));
-
-alert("Product Deleted");
-
-refreshData();
-
-}
-
 /* PURCHASE */
 
 window.savePurchase = async function(){
@@ -851,10 +766,8 @@ const qty =
 Number(document.getElementById("purchaseQty").value);
 
 if(!productId || qty<=0){
-
 alert("Enter Correct Data");
 return;
-
 }
 
 const productRef =
@@ -867,25 +780,14 @@ const data =
 snap.data();
 
 await updateDoc(productRef,{
-
 stock:Number(data.stock)+qty
-
 });
 
 await addDoc(collection(db,"purchases"),{
-
 product:data.name,
-productId,
 qty,
 date:new Date().toLocaleString()
-
 });
-
-await addStockHistory(
-"Purchase",
-data.name,
-qty
-);
 
 alert("Purchase Saved");
 
@@ -951,10 +853,8 @@ if(
 !productId ||
 qty<=0
 ){
-
 alert("Enter Correct Data");
 return;
-
 }
 
 const productRef =
@@ -967,34 +867,21 @@ const data =
 snap.data();
 
 if(data.stock < qty){
-
 alert("Not Enough Stock");
 return;
-
 }
 
 await updateDoc(productRef,{
-
 stock:Number(data.stock)-qty
-
 });
 
 await addDoc(collection(db,"orders"),{
-
 customer,
 officer,
 product:data.name,
-productId,
 qty,
 date:new Date().toLocaleString()
-
 });
-
-await addStockHistory(
-"Sale",
-data.name,
--qty
-);
 
 alert("Sale Saved");
 
@@ -1029,9 +916,7 @@ new Date(data.date)
 .toLocaleDateString();
 
 if(orderDate === today){
-
 todayQty += Number(data.qty || 0);
-
 }
 
 html += `
@@ -1085,10 +970,8 @@ const qty =
 Number(document.getElementById("returnQty").value);
 
 if(!productId || qty<=0){
-
 alert("Enter Correct Data");
 return;
-
 }
 
 const productRef =
@@ -1101,24 +984,14 @@ const data =
 snap.data();
 
 await updateDoc(productRef,{
-
 stock:Number(data.stock)+qty
-
 });
 
 await addDoc(collection(db,"returns"),{
-
 product:data.name,
 qty,
 date:new Date().toLocaleString()
-
 });
-
-await addStockHistory(
-"Return",
-data.name,
-qty
-);
 
 alert("Return Saved");
 
@@ -1195,18 +1068,14 @@ const date =
 new Date(data.date);
 
 if(date.toLocaleDateString()===today){
-
 daily += qty;
-
 }
 
 if(
 date.getMonth()===month &&
 date.getFullYear()===year
 ){
-
 monthly += qty;
-
 }
 
 });
@@ -1256,18 +1125,14 @@ const email =
 document.getElementById("officerEmail").value;
 
 if(!name || !email){
-
 alert("Enter Correct Data");
 return;
-
 }
 
 await addDoc(collection(db,"officers"),{
-
 name,
 email,
 date:new Date().toLocaleString()
-
 });
 
 alert("Officer Added");
@@ -1332,46 +1197,6 @@ ${data.name}
 
 document.getElementById("salesOfficer")
 .innerHTML = options;
-
-}
-
-/* STOCK HISTORY */
-
-async function loadStockHistory(){
-
-const snapshot =
-await getDocs(collection(db,"stockHistory"));
-
-let html = "";
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-html += `
-<div class="item">
-
-Type: ${data.type}
-
-<br>
-
-Product: ${data.product}
-
-<br>
-
-Qty: ${data.qty}
-
-<br>
-
-Date: ${data.date}
-
-</div>
-`;
-
-});
-
-document.getElementById("stockHistoryList")
-.innerHTML = html;
 
 }
 
