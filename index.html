@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AR Distribution Full System</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -25,7 +22,6 @@ display:none;
 }
 
 /* LOGIN */
-
 .loginBox{
 background:white;
 padding:20px;
@@ -35,8 +31,12 @@ margin:50px auto;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-/* SIDEBAR */
+.loginBox h2{
+margin-bottom:20px;
+text-align:center;
+}
 
+/* SIDEBAR */
 .sidebar{
 position:fixed;
 left:0;
@@ -67,7 +67,6 @@ cursor:pointer;
 }
 
 /* MAIN */
-
 .mainContent{
 margin-left:250px;
 padding:20px;
@@ -146,6 +145,20 @@ margin-bottom:10px;
 color:#0d6efd;
 }
 
+.topBar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.searchBox{
+max-width:300px;
+width:100%;
+}
+
 @media(max-width:768px){
 
 .sidebar{
@@ -159,24 +172,19 @@ margin-left:0;
 }
 
 }
-
 </style>
-
 </head>
 
 <body>
 
 <!-- LOGIN -->
-
 <div class="loginBox" id="loginPage">
 
-<h2 style="text-align:center;margin-bottom:20px;">
-Admin Login
-</h2>
+<h2>Admin Login</h2>
 
-<input type="email" id="email" placeholder="Email">
+<input type="email" id="email" placeholder="Email"/>
 
-<input type="password" id="password" placeholder="Password">
+<input type="password" id="password" placeholder="Password"/>
 
 <button class="actionBtn" onclick="login()">
 Login
@@ -185,11 +193,9 @@ Login
 </div>
 
 <!-- DASHBOARD -->
-
 <div id="dashboard">
 
 <!-- SIDEBAR -->
-
 <div class="sidebar">
 
 <h2>AR Distribution</h2>
@@ -233,11 +239,22 @@ Logout
 </div>
 
 <!-- MAIN -->
-
 <div class="mainContent">
 
-<!-- DASHBOARD -->
+<div class="topBar">
+<h1>AR Distribution System</h1>
 
+<input
+type="text"
+class="searchBox"
+id="searchInput"
+placeholder="Search Product..."
+onkeyup="searchProducts()"
+/>
+
+</div>
+
+<!-- DASHBOARD -->
 <div id="dashboardPage" class="page activePage">
 
 <div class="cardGrid">
@@ -295,20 +312,19 @@ Logout
 </div>
 
 <!-- PRODUCT -->
-
 <div id="productPage" class="page">
 
 <div class="box">
 
 <h2>Add Product</h2>
 
-<input type="text" id="newProductName" placeholder="Product Name">
+<input type="text" id="newProductName" placeholder="Product Name"/>
 
-<input type="number" id="newBuyPrice" placeholder="Buy Price">
+<input type="number" id="newBuyPrice" placeholder="Buy Price"/>
 
-<input type="number" id="newSellPrice" placeholder="Sell Price">
+<input type="number" id="newSellPrice" placeholder="Sell Price"/>
 
-<input type="number" id="openingStock" placeholder="Opening Stock">
+<input type="number" id="openingStock" placeholder="Opening Stock"/>
 
 <button class="actionBtn" onclick="addNewProduct()">
 Add Product
@@ -327,7 +343,6 @@ Add Product
 </div>
 
 <!-- PURCHASE -->
-
 <div id="purchasePage" class="page">
 
 <div class="box">
@@ -336,7 +351,7 @@ Add Product
 
 <select id="purchaseProduct"></select>
 
-<input type="number" id="purchaseQty" placeholder="Purchase Quantity">
+<input type="number" id="purchaseQty" placeholder="Purchase Quantity"/>
 
 <button class="actionBtn" onclick="savePurchase()">
 Save Purchase
@@ -355,20 +370,19 @@ Save Purchase
 </div>
 
 <!-- SALES -->
-
 <div id="salesPage" class="page">
 
 <div class="box">
 
 <h2>Sales Entry</h2>
 
-<input type="text" id="customerName" placeholder="Customer Name">
+<input type="text" id="customerName" placeholder="Customer Name"/>
 
 <select id="salesOfficer"></select>
 
 <select id="orderProduct"></select>
 
-<input type="number" id="orderQty" placeholder="Order Quantity">
+<input type="number" id="orderQty" placeholder="Order Quantity"/>
 
 <button class="actionBtn" onclick="saveOrder()">
 Save Sale
@@ -387,7 +401,6 @@ Save Sale
 </div>
 
 <!-- RETURN -->
-
 <div id="returnPage" class="page">
 
 <div class="box">
@@ -396,7 +409,7 @@ Save Sale
 
 <select id="returnProduct"></select>
 
-<input type="number" id="returnQty" placeholder="Return Quantity">
+<input type="number" id="returnQty" placeholder="Return Quantity"/>
 
 <button class="actionBtn" onclick="returnProductFunc()">
 Save Return
@@ -415,7 +428,6 @@ Save Return
 </div>
 
 <!-- REPORT -->
-
 <div id="reportPage" class="page">
 
 <div class="box">
@@ -445,16 +457,15 @@ Monthly Sales Qty: 0
 </div>
 
 <!-- OFFICER -->
-
 <div id="officerPage" class="page">
 
 <div class="box">
 
 <h2>Add Officer</h2>
 
-<input type="text" id="officerName" placeholder="Officer Name">
+<input type="text" id="officerName" placeholder="Officer Name"/>
 
-<input type="email" id="officerEmail" placeholder="Officer Email">
+<input type="email" id="officerEmail" placeholder="Officer Email"/>
 
 <button class="actionBtn" onclick="addOfficer()">
 Save Officer
@@ -507,17 +518,17 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyCFXN4xMfhMVEcGMwMMe1wrrSDoMqEkspQ",
+apiKey: "YOUR_API_KEY",
 
-authDomain: "ar-distribution-ca285.firebaseapp.com",
+authDomain: "YOUR_AUTH_DOMAIN",
 
-projectId: "ar-distribution-ca285",
+projectId: "YOUR_PROJECT_ID",
 
-storageBucket: "ar-distribution-ca285.firebasestorage.app",
+storageBucket: "YOUR_STORAGE_BUCKET",
 
-messagingSenderId: "668942550210",
+messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
 
-appId: "1:668942550210:web:4b1bccf00766a3c274275b"
+appId: "YOUR_APP_ID"
 
 };
 
@@ -613,15 +624,44 @@ loadStockHistory();
 
 }
 
+/* SEARCH */
+
+window.searchProducts = function(){
+
+const input =
+document.getElementById("searchInput")
+.value.toLowerCase();
+
+const items =
+document.querySelectorAll("#productList .item");
+
+items.forEach(item=>{
+
+if(item.innerText.toLowerCase().includes(input)){
+
+item.style.display = "block";
+
+}else{
+
+item.style.display = "none";
+
+}
+
+});
+
+}
+
 /* STOCK HISTORY */
 
 async function addStockHistory(type,product,qty){
 
 await addDoc(collection(db,"stockHistory"),{
+
 type,
 product,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 }
@@ -643,8 +683,10 @@ const stock =
 Number(document.getElementById("openingStock").value);
 
 if(!name){
+
 alert("Enter Product Name");
 return;
+
 }
 
 const q = query(
@@ -656,15 +698,19 @@ const snapshot =
 await getDocs(q);
 
 if(!snapshot.empty){
+
 alert("Product Already Exists");
 return;
+
 }
 
 await addDoc(collection(db,"products"),{
+
 name,
 buyPrice,
 sellPrice,
 stock
+
 });
 
 await addStockHistory(
@@ -705,8 +751,7 @@ if(data.stock <= 5){
 
 lowHtml += `
 <div class="item">
-${data.name}
-:
+${data.name} :
 <span class="lowStock">
 ${data.stock}
 </span>
@@ -716,7 +761,6 @@ ${data.stock}
 }
 
 html += `
-
 <div class="item">
 
 <b>${data.name}</b>
@@ -742,13 +786,10 @@ ${data.stock}
 class="actionBtn deleteBtn"
 onclick="deleteProduct('${docSnap.id}')"
 >
-
 Delete Product
-
 </button>
 
 </div>
-
 `;
 
 options += `
@@ -810,8 +851,10 @@ const qty =
 Number(document.getElementById("purchaseQty").value);
 
 if(!productId || qty<=0){
+
 alert("Enter Correct Data");
 return;
+
 }
 
 const productRef =
@@ -824,14 +867,18 @@ const data =
 snap.data();
 
 await updateDoc(productRef,{
+
 stock:Number(data.stock)+qty
+
 });
 
 await addDoc(collection(db,"purchases"),{
+
 product:data.name,
 productId,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 await addStockHistory(
@@ -904,8 +951,10 @@ if(
 !productId ||
 qty<=0
 ){
+
 alert("Enter Correct Data");
 return;
+
 }
 
 const productRef =
@@ -918,21 +967,27 @@ const data =
 snap.data();
 
 if(data.stock < qty){
+
 alert("Not Enough Stock");
 return;
+
 }
 
 await updateDoc(productRef,{
+
 stock:Number(data.stock)-qty
+
 });
 
 await addDoc(collection(db,"orders"),{
+
 customer,
 officer,
 product:data.name,
 productId,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 await addStockHistory(
@@ -974,7 +1029,9 @@ new Date(data.date)
 .toLocaleDateString();
 
 if(orderDate === today){
+
 todayQty += Number(data.qty || 0);
+
 }
 
 html += `
@@ -998,21 +1055,6 @@ Qty: ${data.qty}
 
 Date: ${data.date}
 
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteOrder(
-'${docSnap.id}',
-'${data.productId}',
-${data.qty}
-)"
->
-
-Delete Order
-
-</button>
-
 </div>
 `;
 
@@ -1032,37 +1074,6 @@ document.getElementById("monthlySalesCard")
 
 }
 
-/* DELETE ORDER */
-
-window.deleteOrder =
-async function(orderId,productId,qty){
-
-const ok =
-confirm("Delete Order?");
-
-if(!ok) return;
-
-const productRef =
-doc(db,"products",productId);
-
-const snap =
-await getDoc(productRef);
-
-const data =
-snap.data();
-
-await updateDoc(productRef,{
-stock:Number(data.stock)+Number(qty)
-});
-
-await deleteDoc(doc(db,"orders",orderId));
-
-alert("Order Deleted");
-
-refreshData();
-
-}
-
 /* RETURN */
 
 window.returnProductFunc = async function(){
@@ -1074,8 +1085,10 @@ const qty =
 Number(document.getElementById("returnQty").value);
 
 if(!productId || qty<=0){
+
 alert("Enter Correct Data");
 return;
+
 }
 
 const productRef =
@@ -1088,13 +1101,17 @@ const data =
 snap.data();
 
 await updateDoc(productRef,{
+
 stock:Number(data.stock)+qty
+
 });
 
 await addDoc(collection(db,"returns"),{
+
 product:data.name,
 qty,
 date:new Date().toLocaleString()
+
 });
 
 await addStockHistory(
@@ -1178,14 +1195,18 @@ const date =
 new Date(data.date);
 
 if(date.toLocaleDateString()===today){
+
 daily += qty;
+
 }
 
 if(
 date.getMonth()===month &&
 date.getFullYear()===year
 ){
+
 monthly += qty;
+
 }
 
 });
@@ -1235,14 +1256,18 @@ const email =
 document.getElementById("officerEmail").value;
 
 if(!name || !email){
+
 alert("Enter Correct Data");
 return;
+
 }
 
 await addDoc(collection(db,"officers"),{
+
 name,
 email,
 date:new Date().toLocaleString()
+
 });
 
 alert("Officer Added");
@@ -1273,17 +1298,6 @@ Officer Name: ${data.name}
 
 Officer Email: ${data.email}
 
-<br><br>
-
-<button
-class="actionBtn deleteBtn"
-onclick="deleteOfficer('${docSnap.id}')"
->
-
-Delete Officer
-
-</button>
-
 </div>
 `;
 
@@ -1291,23 +1305,6 @@ Delete Officer
 
 document.getElementById("officerList")
 .innerHTML = html;
-
-}
-
-/* DELETE OFFICER */
-
-window.deleteOfficer = async function(id){
-
-const ok =
-confirm("Delete Officer?");
-
-if(!ok) return;
-
-await deleteDoc(doc(db,"officers",id));
-
-alert("Officer Deleted");
-
-refreshData();
 
 }
 
